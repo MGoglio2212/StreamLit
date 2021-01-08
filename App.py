@@ -5,7 +5,7 @@ Created on Fri Jan  1 15:28:47 2021
 @author: gogliom
 """
 import os
-os.chdir("D:\Altro\RPA\Energy\IREN\TEST CTE\App\StreamLit")
+#os.chdir("D:\Altro\RPA\Energy\IREN\TEST CTE\App\StreamLit")
 
 import streamlit as st
 from PIL import Image
