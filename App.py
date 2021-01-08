@@ -184,10 +184,10 @@ def upload_to_bucket(blob_name, file, bucket_name, cred_key):
 
 
 
-
+'''
 with open("style.css") as f:
     st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
-    
+'''    
 image = Image.open('MicrosoftTeams-image.png')
 st.sidebar.image(image, width=225)
 
