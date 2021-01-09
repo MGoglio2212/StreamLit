@@ -226,9 +226,25 @@ from io import StringIO
 
 if uploaded_file is not None:
     
+    Cred = {
+  "type": "service_account",
+  "project_id": "extractpdf-298515",
+  "private_key_id": "8a6a8a0b366cf58e981e2aec543aa871457295ff",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCxRWdU5rVap4z1\nOJOA/AmRBqm/rLLg+/kpgFCWNBcgYprri08h0omYeR2OY8aL1HbEwBS/8ZX34+hC\nFMXL/YnjOWDc6/kPW52HJKGka1aq2h1QBOz6/WInyuWAC3/n//+dOnRZHdMJcVgu\nGpVIE99JMTt7cCQ9keJ0iq269BAjjtDa+GEy07UYjPhTCgSoYCkN3tFAXdYYNWZM\nLUaapdPMTErlyq54/PaU6bxDiYPFDOMQL2OGb6Y/PpCD0r2AiRMe/P1YooQRQkBV\nRn4yB5OfJTFlH58NQMgZ5YLJSMUFz06a6fGxW1q3n3iCbwqXMPkNRscV10HvDLnb\nM/g8v8ptAgMBAAECggEADJEzxeOphDDVeqClPl3qd17+TjxvSFQSAinwAfH/7g0S\nLV7TKuiVgMXHUraf7FOmjC9k2TBb4MwbWqyafX9u1M5sH5qqrbbMPbjbAmsUpL3x\nRDYRLyr4QtjCDo2M0V+cmWLRPZcdGgcwc0Dxsn+BfcYb0NYD+l8bANxAUZJnXtSC\nVDXChN4655gqe+2+b9tKNb6rS1yGFePrc720FK4+0JQYkbcnS/+CdHdyAo2zmLws\nJG3Z31NKmzL/LESqOqBF5AmMM99gMUG++MsjMLn+WvFaBBB69ppgkua1w8h0Agfh\nDr5U6grREbfPLGqkYeV8uJeP/ger7IGl4HgLzdrx0QKBgQDrXpvbKIJo8dOHMAWY\n8pOa/b+Y6gS3M1Lnk/gGhWxtEWv7hlWx4E0VDu6SLJXJ8WDUxfFm21fyiOAltyva\nzm13cvBYqG+Rg/b4t3PSvW/FJEwj4410D/G/nYL/JPGsYbQIdaK9vTQYQfDSBtlP\nb0xG0QyWH9VBy5pzpJexvtBQHQKBgQDAzyPToMl5aqLUA2/Yj0H7x39V5/JTNjsN\n43UpnhtzM5ZVoxuTqeALsdZQGFYVz5bLPcRT2slac1tTKR5xoewL6ZJ2vTd50yHg\ns3LEzxucYQNKENvzO5JPVX3NeNOdpQIVca9qjkYxNPNoVMI0Ei+8dzuwJmisTrk+\nwSxbQHPykQKBgQDTY8k+8AcQEgEU7YBZeaQwE648vBE4KJRRAIhF8xcKbhc5c9EL\nTJRuUVbbWce981gwQQcqhd1bKquFtBljDvspyMUsGzr4yjjJ8JnJr/HucUchBIJK\ntvc8TU8VsCyN0cJLxrs/Ber/zllniFcsDJ3JDH/tZPG3ghFZw32qWeHl0QKBgDq5\nnIbjrRnPEeMTXOiP0aAXRkBrEhKoLNpxEgln/6JZ7wsMT+Ts07GcK9NfZjDkdmBW\n4spLlBJ5mjI9Dum7UMLcFGEYBqKTXPksjuNE1XsOzUqs0eFGnqyNNHD1wTZ9wKG5\na50/0j9AinaXgkML2wBDLKndOPpqS9/CRHlSqz4RAoGAQ2J8Kl/VJCT4I/AWkdDS\nz4LnxwRmmY6iqxfPGxzQ8dKrm/oxlY0pXqDE8wxG+CyKikxA3RxB87wLsCFPjIG6\nxkBFVYdw2frka9aXButyxnZHZJT90WfO7uSpuw8Ipk70I6kMLndKVfINZpUfADcr\nkTA4UA2vBalHF4WMqRDSR2M=\n-----END PRIVATE KEY-----\n",
+  "client_email": "extractpdf@extractpdf-298515.iam.gserviceaccount.com",
+  "client_id": "111857927506471507754",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/extractpdf%40extractpdf-298515.iam.gserviceaccount.com"
+}
 
     storage_client = storage.Client.from_service_account_json(
-    r"D:\Altro\RPA\Energy\IREN\TEST CTE\DocumentAI\ExtractPDF-8a6a8a0b366c.json")
+    Cred)
+
+
+    #storage_client = storage.Client.from_service_account_json(
+    #r"D:\Altro\RPA\Energy\IREN\TEST CTE\DocumentAI\ExtractPDF-8a6a8a0b366c.json")
 
     #print(buckets = list(storage_client.list_buckets())
 
