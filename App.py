@@ -229,7 +229,7 @@ if uploaded_file is not None:
 
 
     storage_client = storage.Client.from_service_account_json(
-    Cred)
+    r"D:\Altro\RPA\Energy\IREN\TEST CTE\DocumentAI\ExtractPDF-8a6a8a0b366c.json")
 
     #print(buckets = list(storage_client.list_buckets())
 
