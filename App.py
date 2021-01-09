@@ -234,7 +234,7 @@ if uploaded_file is not None:
     #print(buckets = list(storage_client.list_buckets())
 
     bucket = storage_client.get_bucket('pdf_cte')
-    blob = bucket.blob('uuu')
+    blob = bucket.blob('uuu2')
     
     Doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
     doc2 = fitz.open()                 # new empty PDF
