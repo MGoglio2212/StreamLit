@@ -226,7 +226,8 @@ from io import StringIO
 
 if uploaded_file is not None:
     
-    Cred = {
+    '''
+   Cred = {
   "type": "service_account",
   "project_id": "extractpdf-298515",
   "private_key_id": "8a6a8a0b366cf58e981e2aec543aa871457295ff",
@@ -238,9 +239,10 @@ if uploaded_file is not None:
   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/extractpdf%40extractpdf-298515.iam.gserviceaccount.com"
 }
+    '''
 
     storage_client = storage.Client.from_service_account_json(
-    Cred)
+    "8a6a8a0b366cf58e981e2aec543aa871457295ff")
 
 
     #storage_client = storage.Client.from_service_account_json(
