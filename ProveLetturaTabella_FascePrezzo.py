@@ -20,7 +20,7 @@ import os
 #os.chdir("D:\Altro\RPA\Energy\IREN\TEST CTE\DocumentAI")
 
 #directory dove salvo i pickle da google cloud
-OutDir = "D:\Altro\RPA\Energy\IREN\TEST CTE\DocumentAI\Output"
+#OutDir = "D:\Altro\RPA\Energy\IREN\TEST CTE\DocumentAI\Output"
 
 import pandas as pd
 from itertools import tee, islice, chain
@@ -56,55 +56,14 @@ def upload_to_bucket(blob_name, path_to_file, bucket_name, cred_key):
     return blob.public_url
 
 
-def StimaSpesaFasce(directory, filename, Value):
-
-    #se non esiste pickle da chiamata api a google cloud, faccio chiamata
-    storage_client = storage.Client()
-    blobs = storage_client.list_blobs('pdf_cte')
-    
-    PC = 'gs://pdf_cte/'+filename
-    
-    
-    ListaFileGCP = list()
-    for blob in blobs:
-       ListaFileGCP.append(blob.name.upper())
-    
-    NPICKLE = os.path.splitext(filename)[0]
-    NPICKLE = NPICKLE + '.pkl'
-    Percorso = os.path.join(OutDir, NPICKLE)
-
-    #se un pdf non ha tabelle non viene creato il pickle.
-    #quindi se ripasso lo stesso file, il pickle non viene trovato e viene fatta richiesta a google 
-    #quindi decido di modificare la condizione, filtrando per il fatto se il pdf è già presente sul bucket 
-    #se già presente, lo avrò già analizzato
-    #altrimenti lo carico e lo analizzo con api google 
-    
-    '''
-    #vecchia condizione sulla presenza del pickle 
-    if os.path.isfile(Percorso) == True:
-        pass
-    '''
-    
-
-    if filename.upper() in ListaFileGCP:        
-        pass  
-    else:
-        #carico file su storage google 
-        ppp = upload_to_bucket(filename
-                      ,os.path.join(directory, filename)
-                      ,'pdf_cte'
-                      ,'D:\Altro\RPA\Energy\IREN\TEST CTE\DocumentAI\ExtractPDF-8a6a8a0b366c.json')
+def StimaSpesaFasce(NPICKLE, Value):
 
 
-        
-        xxx = parse_table(project_id='extractpdf-298515',
-                input_uri = PC ,
-                filename = filename)
 
     ####################################################################
     #elaboro il pickle
     ####################################################################
-    GGTab = pd.read_pickle(os.path.join(OutDir, NPICKLE))
+    GGTab = pd.read_pickle(NPICKLE)
     GGTab['conta'] = GGTab.groupby(['Page','RowNum_Header','RowNum','Table']).cumcount()+1 
     
     

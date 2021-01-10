@@ -203,7 +203,7 @@ def ElabFile(directory, filename, NPICKLE):
                 #se va in errore, applico altra fuznione 
                 #F0 lo assegno al Prezzo unico
                 try:
-                    PF0 = StimaSpesaFasce(directory, filename, "F0")            
+                    PF0 = StimaSpesaFasce(NPICKLE, "F0")            
                     Res.at[0,'Price'] = PF0.iloc[0]
            
                 except:
@@ -228,7 +228,7 @@ def ElabFile(directory, filename, NPICKLE):
                 ### F1 ####    
                 Res['F1'] = ""
                 try:
-                    PF1 = StimaSpesaFasce(directory, filename, "F1")
+                    PF1 = StimaSpesaFasce(NPICKLE, "F1")
                     Res.at[0,'F1'] = PF1.iloc[0]
                 
                 except:
@@ -245,7 +245,7 @@ def ElabFile(directory, filename, NPICKLE):
                 ### f2 ####
                 Res['F2'] = ""
                 try:
-                    PF2 = StimaSpesaFasce(directory, filename, "F2")
+                    PF2 = StimaSpesaFasce(NPICKLE, "F2")
                     Res.at[0,'F2'] = PF2.iloc[0]
                 except:
                     pass
@@ -261,7 +261,7 @@ def ElabFile(directory, filename, NPICKLE):
                 ### F3 ###
                 Res['F3'] = ""
                 try:
-                    PF3 = StimaSpesaFasce(directory, filename, "F3")
+                    PF3 = StimaSpesaFasce(NPICKLE, "F3")
                     Res.at[0,'F3'] = PF3.iloc[0]
                 except:
                     pass
