@@ -66,6 +66,7 @@ st.markdown("<h2 style='text-align: center; color: black;'>Energia Gas</h2>", un
 
 
 import fitz
+fitz.TOOLS.mupdf_display_errors(False)
 from io import StringIO
 import base64
 
@@ -104,7 +105,8 @@ if uploaded_file is not None:
     ListaFileGCP = list()
     for blob in blobs:
        ListaFileGCP.append(blob.name.upper())
-            
+        
+       
     
     
     #se un pdf non ha tabelle non viene creato il pickle.
