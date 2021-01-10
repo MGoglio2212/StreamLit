@@ -26,7 +26,7 @@ import os
 
 from google.oauth2 import service_account
 
-cred = service_account.Credentials.from_service_account_file("ExtractPDF-8a6a8a0b366c.json.json")
+cred = service_account.Credentials.from_service_account_file("ExtractPDF-8a6a8a0b366c.json")
 
 
 def upload_to_bucket(blob_name, file, bucket_name, cred_key):
