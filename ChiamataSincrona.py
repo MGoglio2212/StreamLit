@@ -18,16 +18,16 @@ import pandas as pd
 
 def parse_table(project_id
                 ,input_uri 
-                ,filename ):
+                ,filename 
+                ,cred ):
     """Parse a form"""
     
     RIGHE = []
     RIGHE = pd.DataFrame(RIGHE)
     
     
-    
 
-    client = documentai.DocumentUnderstandingServiceClient()
+    client = documentai.DocumentUnderstandingServiceClient(credentials = cred)
 
     gcs_source = documentai.types.GcsSource(uri=input_uri)
 
@@ -131,7 +131,7 @@ def parse_table(project_id
                 
                 FF = os.path.splitext(filename)[0] 
                 FF = FF + '.pkl'
-                RIGHE.to_pickle(os.path.join(FF))
+                RIGHE.to_pickle(os.path.join(FF), protocol = 2)
         
     return RIGHE
             

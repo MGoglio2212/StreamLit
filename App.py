@@ -24,6 +24,11 @@ import re
 from google.cloud import storage  
 import os
 
+from google.oauth2 import service_account
+
+cred = service_account.Credentials.from_service_account_file("ExtractPDF-8a6a8a0b366c.json.json")
+
+
 def upload_to_bucket(blob_name, file, bucket_name, cred_key):
     """ Upload data to a bucket"""
 
@@ -108,7 +113,10 @@ if uploaded_file is not None:
     #se già presente, lo avrò già analizzato
     #altrimenti lo carico e lo analizzo con api google 
 
-    
+        #devo scaricare anche il pickle    
+    NPICKLE = os.path.splitext(filename)[0]
+    NPICKLE = NPICKLE + '.pkl'
+    blobName_PICKLE = bucket.blob(NPICKLE)
 
     if filename.upper() in ListaFileGCP:
         pass  
@@ -121,21 +129,24 @@ if uploaded_file is not None:
         #blob.upload_from_file(doc2)
         blobName.upload_from_filename(filename)
 
+
+
         PC = 'gs://pdf_cte/'+filename
         
         
         xxx = parse_table(project_id='extractpdf-298515',
                 input_uri = PC ,
-                filename = filename)
+                filename = filename,
+                cred = cred)
+        xxx.to_pickle(os.path.join(NPICKLE), protocol = 2)
+        blobName_PICKLE.upload_from_filename(NPICKLE)
         
-
+        
+        
+        
     #Scarico file pdf da gcp a questo punto
     blobName.download_to_filename(filename)
     
-    #devo scaricare anche il pickle    
-    NPICKLE = os.path.splitext(filename)[0]
-    NPICKLE = NPICKLE + '.pkl'
-    blobName_PICKLE = bucket.blob(NPICKLE)
     blobName_PICKLE.download_to_filename(NPICKLE)
     xxx = pd.read_pickle(NPICKLE)
     #st.write(xxx)
