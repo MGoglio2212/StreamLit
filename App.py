@@ -138,14 +138,7 @@ if uploaded_file is not None:
             #blob.upload_from_file(doc2)
             blobName.upload_from_filename(filename)
             
-            '''
-            doc2 = fitz.open()                 # new empty PDF
-            doc2.insertPDF(Doc, to_page = 9)  # first 10 pages
-            doc2.save(filename=filename)
-            #blob.upload_from_file(doc2)
-            blobName.upload_from_filename(filename)
-            '''
-    
+
     
             PC = 'gs://pdf_cte/'+filename
             
