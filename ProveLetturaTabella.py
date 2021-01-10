@@ -110,10 +110,17 @@ def StimaSpesaAnnua(NPICKLE, Value):
                             if Guess.isnull().all() or Guess.eq("").all():
                                 #cerco nella colonna successiva della riga successiva
                                 Guess = TableSel_2[nexts_2] 
+                            else:
+                                break
+                        else:
+                            break
+                    else:
+                        break
+                else:
+                    break
                     
-                    
-                App['Value'] = pd.Series(Guess)        
-                GuessOverall = GuessOverall.append(App)
+    App['Value'] = pd.Series(Guess)        
+    GuessOverall = GuessOverall.append(App)
     
     return GuessOverall['Value']
             
