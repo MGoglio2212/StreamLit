@@ -94,8 +94,9 @@ if uploaded_file is not None:
     
     filename = uploaded_file.name
     Doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
-    Doc.insertPDF(Doc, to_page = 9)  # first 10 pages
-    Doc.save(filename=filename)
+    Doc2 = fitz.open()
+    Doc2.insertPDF(Doc, to_page = 9)  # first 10 pages
+    Doc2.save(filename=filename)
 
     if os.path.isfile('ExtractPDF-8a6a8a0b366c.json'):   #se c'è file con credenziali, faccio giro completo con anche upload su GCP e analisi tabelle con Google API
     
