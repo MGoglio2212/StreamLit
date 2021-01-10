@@ -91,6 +91,12 @@ from pdfminer.pdfpage import PDFPage
 from io import StringIO
 
 if uploaded_file is not None:
+    
+    filename = uploaded_file.name
+    Doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
+    Doc.insertPDF(Doc, to_page = 9)  # first 10 pages
+    Doc.save(filename=filename)
+
     if os.path.isfile('ExtractPDF-8a6a8a0b366c.json'):   #se c'è file con credenziali, faccio giro completo con anche upload su GCP e analisi tabelle con Google API
     
      
@@ -100,7 +106,7 @@ if uploaded_file is not None:
     
         bucket = storage_client.get_bucket('pdf_cte')
     
-        filename = uploaded_file.name
+ 
         
         blobName = bucket.blob(filename)
         blobs = storage_client.list_blobs('pdf_cte')
@@ -128,9 +134,6 @@ if uploaded_file is not None:
             pass  
         else:
             
-            Doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
-            Doc.insertPDF(Doc, to_page = 9)  # first 10 pages
-            Doc.save(filename=filename)
             #blob.upload_from_file(doc2)
             blobName.upload_from_filename(filename)
             
@@ -155,14 +158,12 @@ if uploaded_file is not None:
     
         #Scarico file pdf da gcp a questo punto
         blobName.download_to_filename(filename)
-    
         blobName_PICKLE.download_to_filename(NPICKLE)
-    
-    
         Result = ElabFile("", filename, NPICKLE)
 
+
     elif not os.path.isfile('ExtractPDF-8a6a8a0b366c.json'): #non ho caricato file di credenziali, quindi faccio lettura diretta del file pdf senza passare da google (e non mostro stimaspesaanua)
-        Result = ElabFile("", uploaded_file, "")
+        Result = ElabFile("", filename , "")
 
 
 
