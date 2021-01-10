@@ -65,12 +65,29 @@ def StimaSpesaFasce(directory, filename, Value):
     PC = 'gs://pdf_cte/'+filename
     
     
+    ListaFileGCP = list()
+    for blob in blobs:
+       ListaFileGCP.append(blob.name.upper())
+    
     NPICKLE = os.path.splitext(filename)[0]
     NPICKLE = NPICKLE + '.pkl'
     Percorso = os.path.join(OutDir, NPICKLE)
+
+    #se un pdf non ha tabelle non viene creato il pickle.
+    #quindi se ripasso lo stesso file, il pickle non viene trovato e viene fatta richiesta a google 
+    #quindi decido di modificare la condizione, filtrando per il fatto se il pdf è già presente sul bucket 
+    #se già presente, lo avrò già analizzato
+    #altrimenti lo carico e lo analizzo con api google 
+    
     '''
+    #vecchia condizione sulla presenza del pickle 
     if os.path.isfile(Percorso) == True:
         pass
+    '''
+    
+
+    if filename.upper() in ListaFileGCP:        
+        pass  
     else:
         #carico file su storage google 
         ppp = upload_to_bucket(filename
@@ -83,8 +100,7 @@ def StimaSpesaFasce(directory, filename, Value):
         xxx = parse_table(project_id='extractpdf-298515',
                 input_uri = PC ,
                 filename = filename)
-    
-    '''
+
     ####################################################################
     #elaboro il pickle
     ####################################################################

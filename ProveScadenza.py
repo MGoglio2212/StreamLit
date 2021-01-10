@@ -34,10 +34,13 @@ def Scadenza(Doc):
     r6 = 'VALID.{,5}DA.{,15}A\s'
     r7 = 'ENTRO IL'
     #r8 = 'DAL\s.{,15}AL\s'
+    r8 = 'SCADENZA'
+    r9 = 'VALID.{,10}ENTRO'
+    r10 = 'VALIDIT.{,10}OFFERTA'
     
     
     
-    regex = [r1,r2,r3,r4,r5,r6,r7]
+    regex = [r1,r2,r3,r4,r5,r6,r7,r8,r9,r10]
     
     regex = re.compile('|'.join(regex))
     
@@ -92,8 +95,8 @@ def Scadenza(Doc):
     #FILTRO PER LE DISTANZE POSITIVE (IL NUMERO VIENE DOPO LA PAROLA, OPPURE NEGATIVE MOLTO PICCOLE DOVE QUINDI LA BASE VIENE IMMEDIATAMENTE DOPO )
     Prezzo = Prezzo[Prezzo['dist'] > 0]
     
-    
-    Prezzo = Prezzo.nsmallest(1, 'dist')
-
+    Prezzo.sort_values(['dist', 'Price'], ascending=[True, False])
+    Prezzo = Prezzo.nsmallest(1, 'dist', keep = 'last')   #in base al sort di prima, in caso di pari merito su distanza prendo la data più avanti
+ 
     
     return Prezzo['Price']

@@ -5,7 +5,7 @@ Created on Sun Dec 13 11:01:16 2020
 @author: gogliom
 """
 import os
-os.chdir("D:\Altro\RPA\Energy\IREN\TEST CTE\App\Funzioni")
+#os.chdir("D:\Altro\RPA\Energy\IREN\TEST CTE\App\Funzioni")
 
 import re
 import numpy as np
@@ -18,8 +18,8 @@ from LetturaPdf_2 import read_pdf_2 #importaizone basata sulla convert_pdf_to_tx
 from ProveDurata import Durata
 from ProveQuoteFissaAnno import PrezzoComponenteDispacciamento , PrezzoComponenteCommVendita 
 from ProveScadenza import Scadenza 
-from Detect_PrezzoMonorario import PrezzoComponenteEnergia
-from Detect_PrezzoMonorario_GAS import PrezzoComponenteGAS 
+from Detect_PrezzoMonorario import PrezzoComponenteEnergia, TipoPrezzo   #VerificaVariabilitàPrezzo --> approccio che estrae descrizione 
+from Detect_PrezzoMonorario_GAS import PrezzoComponenteGAS, TipoPrezzo_GAS
 
 from ProvePerNomeOfferta import Name
 from SplitPDF_EnergiaGas import SplitPDF
@@ -54,7 +54,7 @@ filename = "Sinergy_ValidaFinoNov.pdf"
 '''
 
 
-def ElabFile(directory, filename):
+def ElabFile(directory, filename, NPICKLE):
     Prezzo = ""
     ResAll = []
 
@@ -68,9 +68,9 @@ def ElabFile(directory, filename):
         Res = pd.DataFrame(Res)
         
         try:  #in un caso la lettura della convert_pdf_to_txt va in errore -> in except metto lettura con struttura
-            Read = read_pdf(os.path.join(directory, filename))
-        except:
             Read = read_pdf_2(os.path.join(directory, filename))
+        except:
+            Read = read_pdf(os.path.join(directory, filename))
             
         Commodity = Read[0]
         Energia = Read[1]
@@ -91,19 +91,31 @@ def ElabFile(directory, filename):
         Energia = Energia.replace("- ", "-")
         Gas = Gas.replace("- ", "-")  
         
+        #faccio il replace del pipe che si crea con la struttura 
+        Energia = Energia.replace("|", " ")
+        Gas = Gas.replace("|", " ")  
+        
+        #per alcuni operatori i numeri vengono separati da uno spazio
+        #questo succede soprattutto sui numeri dei prezzi al kwh o smc
+        #provo ad eliminarli anche se non sono sicuro sia migliorativo 
+        Energia = re.sub(r'(0,\d+)\s+(\d)', r'\1\2', Energia)
+        Gas = re.sub(r'(0,\d+)\s+(\d)', r'\1\2', Gas)
+        
+        
         #alcuni operatori i costi fissi li scrivono in lettere..
         Energia = replaceNumber(Energia)
         Gas = replaceNumber(Gas)
 
         
         #carico cmq tutto il documento anche con prima lettura del pdf che avevo usato (senza struttura)
+        '''
         try:
             Doc1 = convert_pdf_to_txt(os.path.join(directory, filename))
             Doc1 = Doc1.upper()
             Doc1 = replaceNumber(Doc1)
         except:
             pass 
-
+        '''
 
                 
         for Com in Commodity['Class']:
@@ -146,7 +158,7 @@ def ElabFile(directory, filename):
             if len(Res['CodiceOfferta']) > 0:
                 if Res['CodiceOfferta'][0] == "":
                     try:
-                        Cod = CodiceOfferta(Doc)
+                        Cod = CodiceOfferta(Doc2)
                         Res.at[0, 'CodiceOfferta'] = Cod.iloc[0]
                     except: 
                         pass
@@ -154,7 +166,7 @@ def ElabFile(directory, filename):
             elif len(Res['CodiceOfferta']) == 0: 
                 print('aa') #nel caso in cui il dataframe non ha obs      
                 try:
-                    Cod = CodiceOfferta(Doc)
+                    Cod = CodiceOfferta(Doc2)
                     Res.at[0, 'CodiceOfferta'] = Cod.iloc[0]
                 except:
                     pass             
@@ -166,11 +178,11 @@ def ElabFile(directory, filename):
 
             try:
                 if Com == 'Energia':
-                    SpA = StimaSpesaAnnua(directory, filename, "2.700")
+                    SpA = StimaSpesaAnnua(NPICKLE, "2.700")
                     Res.at[0,'StimaSpesaAnnua'] = SpA.iloc[0]
                     #Res['StimaSpesaAnnua'] = SpA 
                 elif Com == 'Gas':
-                    SpA = StimaSpesaAnnua(directory, filename, "1.400")
+                    SpA = StimaSpesaAnnua(NPICKLE, "1.400")
                     Res.at[0,'StimaSpesaAnnua'] = SpA.iloc[0]
                     #Res['StimaSpesaAnnua'] = SpA 
                 
@@ -196,19 +208,18 @@ def ElabFile(directory, filename):
            
                 except:
                     pass
-                
-                
+        
+     
                 Res.Price = Res.Price.fillna('')                
                 if Res['Price'][0] == "" or Res['Price'][0] == []:
-                    print('aa')
                     try:
                         #Prezzo = PrezzoComponenteEnergia(os.path.join(directory, filename))
                         P = PrezzoComponenteEnergia(Doc)
-                        P1 = P[0]
-                        P2 = P[1]                    
+                        #P1 = P[0]
+                        #P2 = P[1]                    
                         
-                        Res.at[0,'Price'] = P1.iloc[0]
-                        Res.at[0,'TipoPrezzo'] = P2.iloc[0]
+                        Res.at[0,'Price'] = P.iloc[0]
+                        #Res.at[0,'TipoPrezzo'] = P2.iloc[0]
                         #Res['Price'] = P1
                         #Res['TipoPrezzo'] = P2
                     except:
@@ -225,7 +236,6 @@ def ElabFile(directory, filename):
                 
                 Res.F1 = Res.F1.fillna('')                
                 if Res['F1'][0] == "" or Res['F1'][0] == []:
-                    print('aa')
                     try:
                         PF1 = PrezzoComponenteEnergiaF1(Doc)
                         Res.at[0,'F1'] = PF1.iloc[0]
@@ -263,15 +273,27 @@ def ElabFile(directory, filename):
                     except:
                         pass
 
+                #tipo prezzo fisso / variabile
+                Res['TipoPrezzo'] = ""
+                try:
+                    TP = TipoPrezzo(Doc)
+                    Res.at[0,'TipoPrezzo'] = TP.iloc[0]
+                except:
+                    pass
+                
+                #quando la parte sul tipoprezzo era dentro la funzione per il prezzo componente energia, facevi anche questa parte qui sotto                
+                #if pd.isnull(Prezzo['Price']).any():
+                    #Prezzo['Price'].values = 'Variabile'
+
 
             if Com == "Gas":
                 try:
                     P = PrezzoComponenteGAS(Doc)
-                    P1 = P[0]
-                    P2 = P[1]                    
+                    #P1 = P[0]
+                    #P2 = P[1]                    
                         
-                    Res.at[0,'Price'] = P1.iloc[0]
-                    Res.at[0,'TipoPrezzo'] = P2.iloc[0]
+                    Res.at[0,'Price'] = P.iloc[0]
+                    #Res.at[0,'TipoPrezzo'] = P2.iloc[0]
                     #Res['Price'] = P1
                     #Res['TipoPrezzo'] = P2
                 except:
@@ -289,11 +311,11 @@ def ElabFile(directory, filename):
                         Gas1 = Gas1.upper()
                         try:
                             P = PrezzoComponenteGAS(Gas1)
-                            P1 = P[0]
-                            P2 = P[1]                    
+                            #P1 = P[0]
+                            #P2 = P[1]                    
                                 
-                            Res.at[0,'Price'] = P1.iloc[0]
-                            Res.at[0,'TipoPrezzo'] = P2.iloc[0]
+                            Res.at[0,'Price'] = P.iloc[0]
+                            #Res.at[0,'TipoPrezzo'] = P2.iloc[0]
                             #Res['Price'] = P1
                         except:
                             pass
@@ -304,16 +326,29 @@ def ElabFile(directory, filename):
                     Gas1 = Gas1.upper()
                     try:
                         P = PrezzoComponenteGAS(Gas1)
-                        P1 = P[0]
-                        P2 = P[1]                    
+                        #P1 = P[0]
+                        #P2 = P[1]                    
                                 
-                        Res.at[0,'Price'] = P1.iloc[0]
-                        Res.at[0,'TipoPrezzo'] = P2.iloc[0]
+                        Res.at[0,'Price'] = P.iloc[0]
+                        #Res.at[0,'TipoPrezzo'] = P2.iloc[0]
                         #Res['Price'] = P1
                     except:
                         pass
 
                 
+                #tipo prezzo fisso / variabile
+                Res['TipoPrezzo'] = ""
+                try:
+                    TP = TipoPrezzo_GAS(Doc)
+                    Res.at[0,'TipoPrezzo'] = TP.iloc[0]
+                except:
+                    pass
+                
+                #quando la parte sul tipoprezzo era dentro la funzione per il prezzo componente energia, facevi anche questa parte qui sotto                
+                #if pd.isnull(Prezzo['Price']).any():
+                    #Prezzo['Price'].values = 'Variabile'
+
+    
         
             try:
                 CV = PrezzoComponenteCommVendita(Doc)                
@@ -345,9 +380,14 @@ def ElabFile(directory, filename):
             except:
                 pass 
                 
-                
+            
+            #al prezzo verde, mando in input anche il prezzo già identificato 
+            #di modo che tra i candidati del prezzo verde, elimino quelli uguali al prezzo €/kwh
+            PE = Res['Price'][0]
+            Res['FlagVerde']=""
+            Res['PrezzoVerde'] = ""
             try:
-                E = energiaVerde(Doc)
+                E = energiaVerde(Doc, PE)
                 E1 = E[0]
                 E2 = E[1]
                 Res.at[0,'FlagVerde'] = E1.iloc[0]
@@ -355,6 +395,23 @@ def ElabFile(directory, filename):
                 
             except:
                 pass
+            
+          
+            
+            
+            #####################################
+            #####################################
+            # Pulizie finali 
+            
+            #Res['Price'] = Res.apply(lambda row: row.Price.replace(" ",""), axis = 1)
+            #Res['Price'] = Res.apply(lambda row: row.Price.replace("€",""), axis = 1)
+            
+            #Res['PrezzoVerde'] = Res.apply(lambda row: row.PrezzoVerde.replace(" ",""), axis = 1)
+            #Res['PrezzoVerde'] = Res.apply(lambda row: row.PrezzoVerde.replace("€",""), axis = 1)
+            
+            #faccio un check se prezzo verde = prezzo "standard" allora sbianco 
+            if Res['PrezzoVerde'][0] == Res['Price'][0]:
+                Res.at[0,'PrezzoVerde'] = ""
                     
             Res['File'] = filename
             Res['Dir'] = directory

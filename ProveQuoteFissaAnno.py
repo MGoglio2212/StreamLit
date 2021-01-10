@@ -30,7 +30,10 @@ import pandas as pd
 import re
 from ProvePDF import convert_pdf_to_txt
 import numpy as np
-
+import regex as re  #ATTENZIONE! DEVO IMPORTARE 3RD PARTY REGEX MODULO PERCHè QUESTO SUPPORTA I "NEGATIVE LOOKAHEAD
+                    #DI LUNGHEZZA VARIABILE --> DEVO PRENDERE "VERDE" CHE NON SIA PRECEDUTO DA NUMERO O DA N° E QUESTO 
+                    #E' UN NEGATIVE LOOKAHEAD DI LUNGHEZZA VARIABILE CHE VA IN ERRORE SU MODULO STANDARD DI RE
+                    #CFR (https://www.reddit.com/r/learnpython/comments/d5g4ow/regex_match_pattern_not_preceded_by_either_of_two/)
 def PrezzoComponenteCommVendita(Doc):
     
     PossiblePrice_CV = []
@@ -44,12 +47,13 @@ def PrezzoComponenteCommVendita(Doc):
     r2 = 'COSTI.{0,10}COMMERCIALIZZAZIONE'
     r3 = 'PCV'
     r5 = 'COMMERCIALIZZAZIONE.{0,10}VENDITA'
+    r6 = 'CORRISPETTIVO.{0,10}COMMERCIALIZZAZIONE'
     
     #introdotte per il gas
-    r4 = 'QVD'
+    r4 = '(?<!MATERIA PRIMA.{1,80})QVD'
 
 
-    regex_CV = [r1,r2,r3, r4, r5]
+    regex_CV = [r1,r2,r3, r4, r5,r6]
     
     regex_CV = re.compile('|'.join(regex_CV))
     
@@ -63,14 +67,13 @@ def PrezzoComponenteCommVendita(Doc):
     #r1 = '-?\d*,?\d+\s'
     #r2 = '-?\d*\.?\d+\s'
 
-    r1 = '-?\s\d*,?\d+\s'
-    r2 = '-?\s\d*\.?\d+\s'
-    r3 = '-?\s\d*,?\d+€'
-    r4 = '-?\s\d*\.?\d+€'
+    r1 = '(?<!ARTICOLO.{0,10})-?\s+\d*,?\d+\s'
+    #r2 = '-?\s\d*\.?\d+\s'
+    r3 = '(?<!ARTICOLO.{0,10})-?\s+\d*,?\d+€'
+    #r4 = '-?\s\d*\.?\d+€'
+   
 
-
-
-    regex_Num = [r1,r2,r3,r4]
+    regex_Num = [r1,r3]
     
     regexNum_CV = re.compile('|'.join(regex_Num))
     
@@ -88,7 +91,7 @@ def PrezzoComponenteCommVendita(Doc):
     PossiblePrice_CV['Price_NUM'] = PossiblePrice_CV.apply(lambda row: float(row.Price_NUM), axis = 1)
     
     #filtro numeri > 10 e positivi
-    PossiblePrice_CV = PossiblePrice_CV[(PossiblePrice_CV['Price_NUM'] > 10) & (PossiblePrice_CV['Price_NUM'] < 200) ]
+    PossiblePrice_CV = PossiblePrice_CV[(PossiblePrice_CV['Price_NUM'] > 5) & (PossiblePrice_CV['Price_NUM'] < 200) ]
     
     #verifico se nei 40 caratteri prima o dopo c'è riferimento a mese o anno 
     PossiblePrice_CV['Intorno'] = PossiblePrice_CV.apply(lambda row: Doc[row.Position-40:row.Position+40], axis = 1)
@@ -118,7 +121,7 @@ def PrezzoComponenteCommVendita(Doc):
     PossiblePrice = PossiblePrice[PossiblePrice['Price'].apply(lambda row: len(row)) > 0]
     '''
     
-    
+
     
     Base_CV['key'] = 0
     PossiblePrice_CV['key'] = 0
@@ -129,18 +132,33 @@ def PrezzoComponenteCommVendita(Doc):
     Prezzo_CV = Prezzo_CV[(Prezzo_CV['dist'] > - 35) & (Prezzo_CV['dist'] < 200)]
     
     
+
+    
     Prezzo_CV = Prezzo_CV.nsmallest(1, 'dist')
-    if Prezzo_CV['Anno'].all() == 1:
-        Prezzo_CV['Price'] = Prezzo_CV['Price'] + " anno"    
-    elif Prezzo_CV['Mese'].all() == 1:
-        Prezzo_CV['Price'] = Prezzo_CV['Price'] + " mese"
-    else:
+    #trovo sia mese che anno, filtro in base a valore
+    if Prezzo_CV['Mese'].iloc[0] == 1 and Prezzo_CV['Anno'].iloc[0] == 1:
+        if Prezzo_CV['Price_NUM'].iloc[0] > 15:
+            Prezzo_CV['Price'] = Prezzo_CV['Price'] + " anno"    
+        else:
+            Prezzo_CV['Price'] = Prezzo_CV['Price'] + " mese"    
+    #trovo solo mese
+    elif Prezzo_CV['Mese'].iloc[0] == 1:
+        Prezzo_CV['Price'] = Prezzo_CV['Price'] + " mese"    
+        
+    #trovo solo anno
+    elif Prezzo_CV['Anno'].iloc[0] == 1:
         Prezzo_CV['Price'] = Prezzo_CV['Price'] + " anno"
         
+    #non trovo niente
+    else:
+        if Prezzo_CV['Price_NUM'].iloc[0] > 15:
+            Prezzo_CV['Price'] = Prezzo_CV['Price'] + " anno"    
+        else:
+            Prezzo_CV['Price'] = Prezzo_CV['Price'] + " mese"    
+        
+
     
     return Prezzo_CV['Price']
-
-
 
 
 

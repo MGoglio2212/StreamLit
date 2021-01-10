@@ -85,9 +85,7 @@ def Durata(Doc):
     Durata = Base.merge(PossiblePrice, how='outer')
     Durata['dist'] = Durata.apply(lambda row: row.Position - row.PositionBase, axis = 1)
     #FILTRO PER LE DISTANZE POSITIVE (IL NUMERO VIENE DOPO LA PAROLA, OPPURE NEGATIVE MOLTO PICCOLE DOVE QUINDI LA BASE VIENE IMMEDIATAMENTE DOPO )
-    Durata = Durata[Durata['dist'] > - 30]
-    
-    
+    Durata = Durata[(Durata['dist'] > - 30) & (Durata['dist'] < 300)]
     
     #verifico se nei 40 caratteri prima o dopo c'è riferimento a mese o anno 
     dur1_m = r'\bMESE\b'

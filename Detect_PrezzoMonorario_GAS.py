@@ -37,8 +37,8 @@ def PrezzoComponenteGAS(Doc):
     r7 = 'CORRISPETTIVO\s+PREZZO\s+FISSO'
     r8 = 'SPESA.{0,10}MATERIA.{0,10}GAS.{0,10}NATURALE'
     r9 = 'PREZZO.{0,20}MATERIA.{0,20}PRIMA'
-
-    regex = [r1, r2, r3, r4, r5, r6, r7, r8, r9]
+    r10 = 'COSTI.{0,40}MATERIA.{0,20}PRIMA'
+    regex = [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10]
     
     regex = re.compile('|'.join(regex))
     
@@ -105,7 +105,18 @@ def PrezzoComponenteGAS(Doc):
     
     Prezzo = Prezzo.nsmallest(1, 'dist')
     
+    Doc[2000:2200]
     
+
+    return Prezzo['Price_NUM']
+    
+import regex as re  #ATTENZIONE! DEVO IMPORTARE 3RD PARTY REGEX MODULO PERCHè QUESTO SUPPORTA I "NEGATIVE LOOKAHEAD
+                    #DI LUNGHEZZA VARIABILE --> DEVO PRENDERE "VERDE" CHE NON SIA PRECEDUTO DA NUMERO O DA N° E QUESTO 
+                    #E' UN NEGATIVE LOOKAHEAD DI LUNGHEZZA VARIABILE CHE VA IN ERRORE SU MODULO STANDARD DI RE
+                    #CFR (https://www.reddit.com/r/learnpython/comments/d5g4ow/regex_match_pattern_not_preceded_by_either_of_two/)  
+
+
+def TipoPrezzo_GAS(Doc):
     # VERIFICO VARIABILITA' PREZZO     
     v1 = r'\bPSV\b'
     v2 = r'^(?=.*\bPREZZO\b)(?=.*\bACQUISTO\b)(?=.*\bGAS\b).*$'
@@ -130,28 +141,28 @@ def PrezzoComponenteGAS(Doc):
     '''
     #  VERIFICO SE SI PARLA DI COME VIENE CALCOLATO IL PREZZO DELLA COMPONENTE ENERGIA
     
-    f1 = r'PREZZ.{1,30}GAS.{1,50}FISS'
-    f2 = r'PREZZ.{1,30}GAS.{1,50}INVARIABIL'
-    f3 = r'PREZZO FISSO'
+    f1 = r'(?<!PLACET.{1,30})PREZZ.{1,30}GAS.{1,50}FISS'
+    f2 = r'(?<!PLACET.{1,30})PREZZ.{1,30}GAS.{1,50}INVARIABIL'
+    f3 = r'(?<!PLACET.{1,30})PREZZO.{1,30}FISSO'
     f4 = r'PREZZO INVARIABILE'
+    f5 = r'(?<!SPREAD.{1,130}|PARAMETRO.{1,20})FISS.{1,10}INVARIABIL'
+    
 
-    regexFix = [f1, f2, f3, f4]
+    regexFix = [f1, f2, f3, f4, f5]
     
     regexFix = re.compile('|'.join(regexFix))
     
     PriceFix= []
     PriceFix = [m.start() for m in regexFix.finditer(Doc)]
     
-
-    
-    if len(PriceExplanation) == 0 or len(PriceFix) > 0:
-        Prezzo['TipoPrezzo'] = 'Fisso'
-    else:
-        Prezzo['TipoPrezzo'] = 'Variabile'
-        if pd.isnull(Prezzo['Price']).any():
-            Prezzo['Price'].values = 'Variabile'
-
-    return (Prezzo['Price'], Prezzo['TipoPrezzo'])
-    
+    Prezzo = pd.DataFrame(columns = ['TipoPrezzo'])
    
+    if len(PriceExplanation) == 0 or len(PriceFix) > 0:
+        Prezzo.at[0,'TipoPrezzo'] = 'Fisso'
+    else:
+        Prezzo.at[0,'TipoPrezzo'] = 'Variabile'
+
+    return Prezzo['TipoPrezzo']
+
+
 

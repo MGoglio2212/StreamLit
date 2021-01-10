@@ -12,7 +12,7 @@ import os
 #os.chdir("D:\Altro\RPA\Energy\IREN\TEST CTE\DocumentAI")
 
 #directory dove salvo i pickle da google cloud
-OutDir = "D:\Altro\RPA\Energy\IREN\TEST CTE\DocumentAI\Output"
+#OutDir = "D:\Altro\RPA\Energy\IREN\TEST CTE\DocumentAI\Output"
 
 import pandas as pd
 from itertools import tee, islice, chain
@@ -47,40 +47,12 @@ def upload_to_bucket(blob_name, path_to_file, bucket_name, cred_key):
     return blob.public_url
 
 
-
-def StimaSpesaAnnua(directory, filename, Value):
+def StimaSpesaAnnua(NPICKLE, Value):
     
-    #se non esiste pickle da chiamata api a google cloud, faccio chiamata
-    storage_client = storage.Client()
-    blobs = storage_client.list_blobs('pdf_cte')
-    
-    PC = 'gs://pdf_cte/'+filename
-    
-    
-    NPICKLE = os.path.splitext(filename)[0]
-    NPICKLE = NPICKLE + '.pkl'
-    Percorso = os.path.join(OutDir, NPICKLE)
-    '''
-    if os.path.isfile(Percorso) == True:
-        pass
-    else:
-        #carico file su storage google 
-        ppp = upload_to_bucket(filename
-                      ,os.path.join(directory, filename)
-                      ,'pdf_cte'
-                      ,'D:\Altro\RPA\Energy\IREN\TEST CTE\DocumentAI\ExtractPDF-8a6a8a0b366c.json')
-
-
-        
-        xxx = parse_table(project_id='extractpdf-298515',
-                input_uri = PC ,
-                filename = filename)
-       
-    '''
     ####################################################################
     #elaboro il pickle
     ####################################################################
-    GGTab = pd.read_pickle(os.path.join(OutDir, NPICKLE))
+    GGTab = pd.read_pickle(NPICKLE)
     GGTab['conta'] = GGTab.groupby(['Page','RowNum_Header','RowNum','Table']).cumcount()+1 
     
     Value1 = Value

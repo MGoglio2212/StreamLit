@@ -47,7 +47,11 @@ from ClassifyDoc import ClassifyDoc
 def read_pdf_2(filename):
 
     App = convert_pdf_to_txt(filename)
-    App2 =  App.splitlines()
+    
+    App = App.replace("\n"," ")
+    App2 = App.split(". ")
+    
+    #App2 =  App.splitlines()
     
  
     App2 = [x for x in App2 if x]

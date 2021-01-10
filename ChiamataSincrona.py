@@ -9,7 +9,7 @@ Created on Sun Dec 13 16:41:58 2020
 #PRIMA DI LANCIARE , DA ENVIRONMENT IN ANACONDA:   
 #set GOOGLE_APPLICATION_CREDENTIALS=D:\Altro\RPA\Energy\IREN\TEST CTE\DocumentAI\ExtractPDF-8a6a8a0b366c.json
 
-OutDir = "D:\Altro\RPA\Energy\IREN\TEST CTE\DocumentAI\Output"
+#OutDir = "D:\Altro\RPA\Energy\IREN\TEST CTE\DocumentAI\Output"
 import os
 from google.cloud import documentai_v1beta2 as documentai
 
@@ -131,7 +131,7 @@ def parse_table(project_id
                 
                 FF = os.path.splitext(filename)[0] 
                 FF = FF + '.pkl'
-                RIGHE.to_pickle(os.path.join(OutDir, FF))
+                RIGHE.to_pickle(os.path.join(FF))
         
     return RIGHE
             

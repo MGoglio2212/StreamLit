@@ -64,7 +64,7 @@ def PrezzoComponenteEnergiaF1(Doc):
     PossiblePrice['Price_NUM'] = PossiblePrice.apply(lambda row: float(row.Price_NUM), axis = 1)
     
     #filtro numeri < 1 e positivi
-    PossiblePrice = PossiblePrice[(PossiblePrice['Price_NUM'] > 0) & (PossiblePrice['Price_NUM'] < 1)]
+    PossiblePrice = PossiblePrice[(PossiblePrice['Price_NUM'] > 0) & (PossiblePrice['Price_NUM'] < 0.3)]
     
     '''
     APPROCCIO IN BASE AL QUALE CERCO €/KWH E PRENDO PAROLA PRECEDENTE, MA IN ALCUNI CASI NELLE TABELLE NON E ESPLICITATA
@@ -92,16 +92,14 @@ def PrezzoComponenteEnergiaF1(Doc):
     Prezzo = Base.merge(PossiblePrice, how='outer')
     Prezzo['dist'] = Prezzo.apply(lambda row: row.Position - row.PositionBase, axis = 1)
     #FILTRO PER LE DISTANZE POSITIVE (IL NUMERO VIENE DOPO LA PAROLA, OPPURE NEGATIVE MOLTO PICCOLE DOVE QUINDI LA BASE VIENE IMMEDIATAMENTE DOPO )
-    Prezzo = Prezzo[Prezzo['dist'] > - 15]
+    Prezzo = Prezzo[(Prezzo['dist'] > - 15) & (Prezzo['dist'] < 250)]
     #AD OGNI MODO NELLE PRIORITA' PRENDO IL PIU PICCOLO IN VALORE ASSOLUTO
     Prezzo['dist'] = Prezzo['dist'].abs()
     
     
     Prezzo = Prezzo.nsmallest(1, 'dist')
     
-   
-    print(Prezzo['Price'])
-    return Prezzo['Price'] 
+    return Prezzo['Price_NUM'] 
 
 
 def PrezzoComponenteEnergiaF2(Doc):
@@ -149,7 +147,7 @@ def PrezzoComponenteEnergiaF2(Doc):
     PossiblePrice['Price_NUM'] = PossiblePrice.apply(lambda row: float(row.Price_NUM), axis = 1)
     
     #filtro numeri < 1 e positivi
-    PossiblePrice = PossiblePrice[(PossiblePrice['Price_NUM'] > 0) & (PossiblePrice['Price_NUM'] < 1)]
+    PossiblePrice = PossiblePrice[(PossiblePrice['Price_NUM'] > 0) & (PossiblePrice['Price_NUM'] < 0.3)]
     
     '''
     APPROCCIO IN BASE AL QUALE CERCO €/KWH E PRENDO PAROLA PRECEDENTE, MA IN ALCUNI CASI NELLE TABELLE NON E ESPLICITATA
@@ -177,7 +175,7 @@ def PrezzoComponenteEnergiaF2(Doc):
     Prezzo = Base.merge(PossiblePrice, how='outer')
     Prezzo['dist'] = Prezzo.apply(lambda row: row.Position - row.PositionBase, axis = 1)
     #FILTRO PER LE DISTANZE POSITIVE (IL NUMERO VIENE DOPO LA PAROLA, OPPURE NEGATIVE MOLTO PICCOLE DOVE QUINDI LA BASE VIENE IMMEDIATAMENTE DOPO )
-    Prezzo = Prezzo[Prezzo['dist'] > - 15]
+    Prezzo = Prezzo[(Prezzo['dist'] > - 15) & (Prezzo['dist'] < 250)]
     #AD OGNI MODO NELLE PRIORITA' PRENDO IL PIU PICCOLO IN VALORE ASSOLUTO
     Prezzo['dist'] = Prezzo['dist'].abs()
     
@@ -186,8 +184,7 @@ def PrezzoComponenteEnergiaF2(Doc):
     Prezzo = Prezzo.nsmallest(1, 'dist')
     
    
-    print(Prezzo['Price'])
-    return Prezzo['Price'] 
+    return Prezzo['Price_NUM'] 
 
 
 
@@ -236,7 +233,7 @@ def PrezzoComponenteEnergiaF3(Doc):
     PossiblePrice['Price_NUM'] = PossiblePrice.apply(lambda row: float(row.Price_NUM), axis = 1)
     
     #filtro numeri < 1 e positivi
-    PossiblePrice = PossiblePrice[(PossiblePrice['Price_NUM'] > 0) & (PossiblePrice['Price_NUM'] < 1)]
+    PossiblePrice = PossiblePrice[(PossiblePrice['Price_NUM'] > 0) & (PossiblePrice['Price_NUM'] < 0.3)]
     
     '''
     APPROCCIO IN BASE AL QUALE CERCO €/KWH E PRENDO PAROLA PRECEDENTE, MA IN ALCUNI CASI NELLE TABELLE NON E ESPLICITATA
@@ -264,7 +261,7 @@ def PrezzoComponenteEnergiaF3(Doc):
     Prezzo = Base.merge(PossiblePrice, how='outer')
     Prezzo['dist'] = Prezzo.apply(lambda row: row.Position - row.PositionBase, axis = 1)
     #FILTRO PER LE DISTANZE POSITIVE (IL NUMERO VIENE DOPO LA PAROLA, OPPURE NEGATIVE MOLTO PICCOLE DOVE QUINDI LA BASE VIENE IMMEDIATAMENTE DOPO )
-    Prezzo = Prezzo[Prezzo['dist'] > - 15]
+    Prezzo = Prezzo[(Prezzo['dist'] > - 15) & (Prezzo['dist'] < 250)]
     #AD OGNI MODO NELLE PRIORITA' PRENDO IL PIU PICCOLO IN VALORE ASSOLUTO
     Prezzo['dist'] = Prezzo['dist'].abs()
     
@@ -272,5 +269,4 @@ def PrezzoComponenteEnergiaF3(Doc):
     Prezzo = Prezzo.nsmallest(1, 'dist')
     
    
-    print(Prezzo['Price'])
-    return Prezzo['Price'] 
+    return Prezzo['Price_NUM'] 

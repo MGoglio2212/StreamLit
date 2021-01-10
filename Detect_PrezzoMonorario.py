@@ -18,6 +18,7 @@ import pandas as pd
 import re
 import numpy as np
 
+                    
 def PrezzoComponenteEnergia(Doc):
     
     PossiblePrice = []
@@ -28,11 +29,11 @@ def PrezzoComponenteEnergia(Doc):
     #Doc = Doc.upper()
     
     #le inserisco come regular expression perchè non so quanti spazi ci sono e se magari c'è una new line (\s+)
-    r1 = 'CORRISPETTIVO\s+LUCE\s+'
-    r2 = 'COMPONENTE\s+PREZZO\s+ENERGIA'
-    r3 = 'PREZZO\s+LUCE'
-    r4 = 'PREZZO.+COMPONENTE.+ENERGIA'
-    r5 = 'COMPONENTE\s+ENERGIA'
+    r1 = 'CORRISPETTIVO.{0,10}LUCE.{0,10}'
+    r2 = 'COMPONENTE.{0,10}PREZZO.{0,10}ENERGIA'
+    r3 = 'PREZZO.{0,10}LUCE'
+    r4 = 'PREZZO.{0,10}COMPONENTE.{0,10}ENERGIA'
+    r5 = 'COMPONENTE.{0,10}ENERGIA'
     r6 = 'MONORARI'
     r7 = 'MONORARIO'
     r8 = 'F0'
@@ -101,25 +102,37 @@ def PrezzoComponenteEnergia(Doc):
     Prezzo = Base.merge(PossiblePrice, how='outer')
     Prezzo['dist'] = Prezzo.apply(lambda row: row.Position - row.PositionBase, axis = 1)
     #FILTRO PER LE DISTANZE POSITIVE (IL NUMERO VIENE DOPO LA PAROLA, OPPURE NEGATIVE MOLTO PICCOLE DOVE QUINDI LA BASE VIENE IMMEDIATAMENTE DOPO )
-    Prezzo = Prezzo[Prezzo['dist'] > - 25]
+    Prezzo = Prezzo[Prezzo['dist'] > - 30]
     
     
     Prezzo = Prezzo.nsmallest(1, 'dist')
     
+
+    return Prezzo['Price_NUM']
     
+
+
+import regex as re  #ATTENZIONE! DEVO IMPORTARE 3RD PARTY REGEX MODULO PERCHè QUESTO SUPPORTA I "NEGATIVE LOOKAHEAD
+                    #DI LUNGHEZZA VARIABILE --> DEVO PRENDERE "VERDE" CHE NON SIA PRECEDUTO DA NUMERO O DA N° E QUESTO 
+                    #E' UN NEGATIVE LOOKAHEAD DI LUNGHEZZA VARIABILE CHE VA IN ERRORE SU MODULO STANDARD DI RE
+                    #CFR (https://www.reddit.com/r/learnpython/comments/d5g4ow/regex_match_pattern_not_preceded_by_either_of_two/)
+    
+def TipoPrezzo(Doc):
     # VERIFICO VARIABILITA' PREZZO     
     v1 = r'\bPUN\b'
-    v2 = r'^(?=.*\bPREZZO\b)(?=.*\bUNICO\b)(?=.*\bNAZIONALE\b).*$'
+    #v2 = r'^(?=.*\bPREZZO\b)(?=.*\bUNICO\b)(?=.*\bNAZIONALE\b).*$'
+    v2 = r'^(?=.*\bPREZZO\b).{0,30}UNICO.{0,30}NAZIONALE'
     v3 = r'^(?=.*\bINGROSSO\b)(?=.*\bBORSA\b)(?=.*\bELETTRICA\b).*$'
     v4 = r'^(?=.*\bFORMULA\b)(?=.*\bPREZZO\b)(?=.*\bENERGIA\b).*$'
     v5 = r'PREZZO.{0,10}ENERGIA.{0,30}TIV'
     
     regexVar = [v1, v2, v3, v4, v5]
-    
     regexVar = re.compile('|'.join(regexVar))
     
     PriceExplanation= []
     PriceExplanation = [m.start() for m in regexVar.finditer(Doc)]
+    
+
     '''
     for i in Doc.split('\n'):
         if regexVar.match(i):
@@ -129,23 +142,46 @@ def PrezzoComponenteEnergia(Doc):
     
     f1 = r'PREZZ.{1,30}ENERGIA.{1,50}FISS'
     f2 = r'PREZZ.{1,30}ENERGIA.{1,50}INVARIABIL'
+    #f3 = r'PREZZ.{1,30}FISSO'
+    f3 = r'(?<!PLACET.{1,30})PREZZO.{1,30}FISSO'
+    
 
-    regexFix = [f1, f2]
+    regexFix = [f1, f2, f3]
     
     regexFix = re.compile('|'.join(regexFix))
     
     PriceFix= []
     PriceFix = [m.start() for m in regexFix.finditer(Doc)]
     
-
+    Prezzo = pd.DataFrame(columns = ['TipoPrezzo'])
     
     if len(PriceExplanation) == 0 or len(PriceFix) > 0:
-        Prezzo['TipoPrezzo'] = 'Fisso'
+        Prezzo.at[0,'TipoPrezzo'] = 'Fisso'
     else:
-        Prezzo['TipoPrezzo'] = 'Variabile'
-        if pd.isnull(Prezzo['Price']).any():
-            Prezzo['Price'].values = 'Variabile'
-
-    return (Prezzo['Price'], Prezzo['TipoPrezzo'])
+        Prezzo.at[0,'TipoPrezzo'] = 'Variabile'
     
-   
+    return Prezzo['TipoPrezzo']
+    
+
+    ########APPROCCIO FRANCESCO
+def VerificaVariabilitàPrezzo(Doc):
+    
+    v1 = r'\bPUN\b'
+    #v2 = r'^(?=.*\bPREZZO\b)(?=.*\bUNICO\b)(?=.*\bNAZIONALE\b).*$'
+    v2 = r'^(?=.*\bPREZZO\b).{0,30}UNICO.{0,30}NAZIONALE'
+    v3 = r'^(?=.*\bINGROSSO\b)(?=.*\bBORSA\b)(?=.*\bELETTRICA\b).*$'
+    v4 = r'^(?=.*\bFORMULA\b)(?=.*\bPREZZO\b)(?=.*\bENERGIA\b).*$'
+    v5 = r'PREZZO.{0,10}ENERGIA.{0,30}TIV'
+        
+    regexVar = [v1, v2, v3, v4, v5]
+    
+    regexVar = re.compile('|'.join(regexVar))
+    regexVar  
+
+
+    PriceExplanation= []
+    for i in Doc.split('.'):
+        if regexVar.search(i):
+            PriceExplanation.append(i)
+ 
+    return PriceExplanation

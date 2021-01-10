@@ -15,7 +15,7 @@ import regex as re  #ATTENZIONE! DEVO IMPORTARE 3RD PARTY REGEX MODULO PERCHè Q
                     #CFR (https://www.reddit.com/r/learnpython/comments/d5g4ow/regex_match_pattern_not_preceded_by_either_of_two/)
 
 
-def energiaVerde(Doc):
+def energiaVerde(Doc, PE):
     '''
     questa funzione consente di verificare se la cte prevede l'energia verde
     
@@ -33,13 +33,17 @@ def energiaVerde(Doc):
     #Doc = Doc.upper()
     
     #le inserisco come regular expression perchè non so quanti spazi ci sono e se magari c'è una new line (\s+)
-    r1 = r'GREEN'
+    r1 = r'GREEN(?!\s+NETWORK)'
     r2 = r'(?<!NUMERO.|N°.|N.)VERDE'
-    r3 = r'100%.{0,10}FONTI.{0,10}RINNOVABILI'
-    r4 = r'SOLO.{0,10}FONTI.{0,10}RINNOVABILI'
+    r3 = r'100%.{0,10}FONTI.{0,20}RINNOVABILI'
+    r4 = r'SOLO.{0,10}FONTI.{0,20}RINNOVABILI'
+    r5 = r'OPZIONE.{0,30}RINNOVABI'
+    r6 = r'SOLTANTO.{0,10}ENERGIA.{0,25}RINNOVABILI'
+    r7 = r'APPROVVIGION.{0,10}IMPIANTI.{0,25}RINNOVABIL'
+    r8 = r'100%.{0,20}RINNOVABIL'
+    r9 = r'RINNOVABIL.{0,20}100%'
     
-    
-    regex = [r1, r2 , r3, r4]
+    regex = [r1, r2 , r3, r4, r5, r6, r7, r8, r9]
     
     regex = re.compile('|'.join(regex))
     
@@ -51,8 +55,8 @@ def energiaVerde(Doc):
     #regexNum1 = r'-?\d*\,.?\d+'
     #regexNum2 = r'-?\d*\..?\d+'
     
-    regexNum1 = r'-?\d+\,?\d+'
-    regexNum2 = r'-?\d+\.?\d+'
+    regexNum1 = r'-?\s?\d+\,?\d+'
+    regexNum2 = r'-?\s?d+\.?\d+'
     
     
     regexNum = [regexNum1, regexNum2]
@@ -72,12 +76,13 @@ def energiaVerde(Doc):
     PossiblePrice['Price_NUM'] = PossiblePrice.apply(lambda row: float(row.Price_NUM), axis = 1)
     
     #filtro numeri < 5 --> possono anche essere negativi?
-    PossiblePrice = PossiblePrice[(PossiblePrice['Price_NUM'] > -0.02) & (PossiblePrice['Price_NUM'] < 5)]
+    PossiblePrice = PossiblePrice[(PossiblePrice['Price_NUM'] > -0.05) & (PossiblePrice['Price_NUM'] < 5)]
     
     #elimino i numeri lunghi 2 che iniziano con zero, sono tendenzialmente date --> errori 
-    PossiblePrice['Lun'] = PossiblePrice.apply(lambda row: len(row.Price), axis = 1)
-    PossiblePrice['Start'] = PossiblePrice.apply(lambda row: row.Price[0], axis = 1)
+    PossiblePrice['Lun'] = PossiblePrice.apply(lambda row: len(row.Price.replace(" ","")), axis = 1)
+    PossiblePrice['Start'] = PossiblePrice.apply(lambda row: row.Price.replace(" ","")[0], axis = 1)
     PossiblePrice = PossiblePrice[(PossiblePrice['Lun'] != 2) | (PossiblePrice['Start']!= "0")]
+    PossiblePrice = PossiblePrice[PossiblePrice['Price_NUM'] != PE]
 
     
     
@@ -107,11 +112,13 @@ def energiaVerde(Doc):
     Prezzo = Base.merge(PossiblePrice, how='outer')
     Prezzo['dist'] = Prezzo.apply(lambda row: row.Position - row.PositionBase, axis = 1)
     #FILTRO PER LE DISTANZE POSITIVE (IL NUMERO VIENE DOPO LA PAROLA, OPPURE NEGATIVE MOLTO PICCOLE DOVE QUINDI LA BASE VIENE IMMEDIATAMENTE DOPO )
-    Prezzo = Prezzo[(Prezzo['dist'] > - 25) & (Prezzo['dist'] < 200)]
+    Prezzo = Prezzo[(Prezzo['dist'] > - 25) & (Prezzo['dist'] < 300)]
     
+    #se prezzo è > 1 non è ammontare a kwh, ma mensile, quindi mi aspetto cifra tonda..
+    Prezzo = Prezzo[(Prezzo['Price_NUM'] < 1) | (Prezzo['Price_NUM'] % 0.5 == 0)]
+        
     
     Prezzo = Prezzo.nsmallest(1, 'dist')
-    
     
     #creo flag Y/N oltre a prezzo 
     #se ho trovato delle parole in base ma poi non ho trovato match con prezzo, vuol dire che energia è green ma non si paga?
@@ -123,7 +130,7 @@ def energiaVerde(Doc):
         Prezzo['FlagVerde'] = "Y"
         
 
-    return (Prezzo['FlagVerde'],Prezzo['Price'])
+    return (Prezzo['FlagVerde'],Prezzo['Price_NUM'])
     
    
 

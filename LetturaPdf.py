@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Dec 22 15:58:46 2020
+Created on Fri Dec 25 22:55:01 2020
 
 @author: gogliom
 """
-
-
-#https://github.com/LouisdeBruijn/Medium/blob/master/PDF%20retrieval/pdf_retrieval.py 
 
 #questo modo di portar dentro il pdf (alla fine, sotto elements) sembra spacchettare i pdf in base
 #ai paragrafi e tira fuori i titoli dei paragrafi.
@@ -17,11 +14,9 @@ Created on Tue Dec 22 15:58:46 2020
 
 from operator import itemgetter
 import fitz
-import json
 import pandas as pd
 import re
-import os
-import numpy as np
+from ClassifyDoc import ClassifyDoc
 
 def fonts(doc, granularity=False):
     """Extracts fonts and their usage in PDF documents.
@@ -149,9 +144,9 @@ def font_tags(font_counts, styles):
     return size_tag
 
 
-def main_Pdf_WithStructure(directory, filename):
+def main_Pdf_WithStructure(Doc):
 
-    Doc = fitz.open(os.path.join(directory, filename))
+    Doc = fitz.open(Doc)
 
     font_counts, styles = fonts(Doc, granularity=False)
 
@@ -161,112 +156,50 @@ def main_Pdf_WithStructure(directory, filename):
 
     return elements 
 
-
-
-def Name(directory, filename):
-    Structure = main_Pdf_WithStructure(directory, filename)
-    Structure = pd.DataFrame(Structure,columns=['text'])
-    
-    
-    #estraggo i numeri dentro <h>
-    r1 = '<h\d>'
-    regex = [r1]
-    
+def read_pdf(filename):
+    PdfSt = main_Pdf_WithStructure(filename)
+    #tolgo i vuoti
+    PdfSt = [x for x in PdfSt if x]
+    #tolgo quelli uguali a pipe 
+    PdfSt = [x for x in PdfSt if x != '|']
+    #tolgo quelli con solo tag html 
+    r1 = '^<\w\d>\.|$'
+    r2 = '^<\w>\.|$'
+    regex = [r1, r2]
     regex = re.compile('|'.join(regex))
-    Structure['Tag'] = Structure.apply(lambda row: regex.findall(row.text), axis = 1) 
+    PdfSt = [x for x in PdfSt if not regex.match(x)]
     
-    Structure['TagNum'] = Structure.apply(lambda row: str(row.Tag)[4:5], axis = 1)
-
-    Structure['text'] = Structure.apply(lambda row: row.text.upper(), axis = 1 )
-    #faccio pulizie 
-    Structure['text'] = Structure.apply(lambda row: row.text[4:], axis = 1)
-
-    #in alcuni casi (es sinergas) la denominazione offerta commerciale non è in un "<h>", ma in un <p> --> cmq la tengo e gli do valore basso
-    Structure = Structure[(Structure['TagNum']!='') | (Structure['text'].str.contains("NOMINAZIONE OFFERTA COMMERCIALE"))]    
-    Structure['TagNum'] = np.where(Structure['text'].str.contains("NOMINAZIONE OFFERTA COMMERCIALE"), 0, Structure['TagNum'])
+    PdfSt_DF = pd.DataFrame(PdfSt, columns = ['text'])
+    PdfSt_DF['text'] = PdfSt_DF.apply(lambda row: row.text.upper(), axis = 1)    
+    PdfSt_DF['Class'] = PdfSt_DF.apply(lambda row: ClassifyDoc(row.text), axis = 1)
     
-    #se inizia con OFFERTA abbasso il tagnum (esempio OFFERTA GREEN LUCE)!
-    #anche se contiene offerta lo faccio (ma meno)
-    Structure['Start'] = Structure.apply(lambda row: row.text[0:7], axis = 1)
-    Structure['StartOfferta'] =  np.where(Structure['Start'] == "OFFERTA", 4, 0)
-    Structure['ContainsOfferta'] =  np.where(Structure['text'].str.contains("OFFERTA"), 0, 0)
-    Structure['Denominazione'] = np.where(Structure['text'].str.contains('DENOMINAZIONE OFFERTA COMMERCIALE'),2,0)
-
-    #se troppo Lungo penalizzo 
-    Structure['Len'] = Structure.apply(lambda row: len(row.text), axis = 1)
-    Structure['TooLong'] = np.where(Structure['Len'] > 40, -3, 0)
+    PdfSt_DF_Energy = PdfSt_DF[(PdfSt_DF['Class'] == 'Energia') | (PdfSt_DF['Class'] == 'Unknown')]    
+    PdfSt_DF_Gas = PdfSt_DF[(PdfSt_DF['Class'] == 'Gas') | (PdfSt_DF['Class'] == 'Unknown')]    
     
-    #se non è tra il primo 20% dei record in alto (in alto), penalizzo
-    #Structure = Structure.reset_index()
-    Structure['Posizione'] = 0
-    Soglia = round(len(Structure) / 5)
-    Structure.loc[Structure.index[:Soglia], 'Posizione'] = 1
-
-    Structure['TagNum'] = Structure.apply(lambda row: int(row.TagNum) - row.StartOfferta - row.ContainsOfferta - row.Denominazione - row.Posizione - row.TooLong, axis = 1)
-
-
+    Commodity = PdfSt_DF[['Class', 'text']].groupby(['Class']).count()
+    #impongo debbano esserci almeno 2 blocchi per commidity 
+    #Commodity = Commodity[Commodity['text'] > 3]
+    #Commodity = Commodity.reset_index()
+    #Commodity = Commodity[Commodity['Class']!= 'Unknown']
     
-    d1 = '\d\d\\\d\d\\\d{2,4}'   #10\10\20 oppure 10\10\2020
-    d2 = '\d\d/\d\d/\d{2,4}'     #10/10/20 oppure 10/10/2020
-    d3 = '\d\d\\\d\d\\\d{2,4}.AL.\d\d\\\d\d\\\d{2,4}'  #10\10\20 AL 20\20\20 (con anni anche a 4)
-    d4 = '\d\d/\d\d/\d{2,4}.AL.\d\d/\d\d/\d{2,4}'     #10/10/20 AL 20/20/20 (con anni anche a 4)
-    
-    v1 = '\d+\,?\d+'
-    
-    d = [d4, d3 ,d1, d2, v1]   #le regex potrebbero essere sovrapposte,metto prima 
-                            #le più lunghe così se prende quelle si ferma a quella  --> SI DOVREBBE GESTIRE MEGLIO
-
-    regexD = re.compile('|'.join(d))
-    
-    Structure = Structure[~Structure['text'].str.contains(regexD, na = False)]
-    Structure = Structure[~Structure['text'].str.contains("FAC-SIMILE")]
-    Structure = Structure[~Structure['text'].str.contains("FACSIMILE")]
-    Structure = Structure[~Structure['text'].str.contains("FAC SIMILE")]    
-    Structure = Structure[~Structure['text'].str.contains("KWH")]
-    Structure = Structure[~Structure['text'].str.contains("800 ")]
-    Structure = Structure[~Structure['text'].str.contains("ACQUISTI PER TE")]
-    Structure = Structure[~Structure['text'].str.contains("DOVE TROVARCI")]
-    Structure = Structure[~Structure['text'].str.contains("SCHEDA DI CONFRONTABILI")]
-    Structure = Structure[~Structure['text'].str.contains("SERVIZI AGGIUNTIVI E PROMOZIONI")]
-    Structure = Structure[~Structure['text'].str.contains("PROPOSTA DI FORNITURA PER UTENZE DOMESTICHE")]
-    
-    
-
-    
-    Structure['text'] = Structure['text'].str.replace('  ',' ')
-    Structure['text'] = Structure['text'].str.replace('CONDIZIONI ECONOMICHE','')
-    Structure['text'] = Structure['text'].str.replace('CONDIZIONI TECNICO ECONOMICHE','')
-    Structure['text'] = Structure['text'].str.replace("SCHEDA DI CONFRONTABILITA'",'')
-    Structure['text'] = Structure['text'].str.replace("|",'')
-    Structure['text'] = Structure['text'].str.replace("ENERGIA ELETTRICA",'')
-    Structure['text'] = Structure['text'].str.replace("GAS NATURALE",'')
-    Structure['text'] = Structure['text'].str.replace("DENOMINAZIONE COMMERCIALE:",'')
-    Structure['text'] = Structure['text'].str.replace("DENOMINAZIONE OFFERTA COMMERCIALE:",'')
-    Structure['text'] = Structure['text'].str.replace("OFFERTA",'')
-    Structure['text'] = Structure['text'].str.replace(":",'')
-    Structure['text'] = Structure['text'].str.replace("ENOMINAZIONE",'')
-    Structure['text'] = Structure['text'].str.replace("COMMERCIALE",'')
-    Structure['text'] = Structure['text'].str.replace("SCHEDA PRODOTTO",'')
-    Structure['text'] = Structure['text'].str.replace("ALLEGATO A",'')
-    Structure['text'] = Structure['text'].str.replace("ALLEGATO B",'')
-    Structure['text'] = Structure['text'].str.replace("CONDIZIONI PARTICOLARI DI FORNITURA",'')
-    Structure['text'] = Structure['text'].str.replace("CONDIZIONI DI FORNITURA",'')
-    
-    
-    
-    
-    Structure['App'] = Structure.apply(lambda row: len(row.text.replace(" ","")), axis = 1)
-    Structure = Structure[Structure['App'] > 2]
+  
+    #se una commodity è sotto il 25% dei paragrafi la elimino 
+    Commodity = Commodity.reset_index()
+    Tot = Commodity[Commodity['Class'] != 'Unknown']['text'].sum()
+    Commodity['Pct'] = Commodity.apply(lambda row: row.text / Tot, axis = 1)
+    Commodity = Commodity[Commodity['Pct'] > 0.25]
+    Commodity = Commodity[Commodity['Class']!= 'Unknown']    
   
     
-    Structure = Structure[Structure['text']!= ""]
+  
     
+    Ene = ' '.join(PdfSt_DF_Energy.text)
+    Gas = ' '.join(PdfSt_DF_Gas.text)
+    
+    Ene = re.sub("<.*?>", "", Ene)
+    Gas = re.sub("<.*?>", "", Gas)
+    
+    return (Commodity, Ene, Gas)
 
-    Structure = Structure[Structure.TagNum == Structure.TagNum.min()]
 
-    Structure.sort_values(['Len'], ascending=[True])
-    Structure = Structure.nsmallest(1, 'TagNum', keep = 'last')   #in base al sort di prima, prendo quello più lungo 
-   
 
-        
-    return Structure['text']    
