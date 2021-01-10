@@ -18,7 +18,7 @@ from LetturaPdf_2 import read_pdf_2 #importaizone basata sulla convert_pdf_to_tx
 from ProveDurata import Durata
 from ProveQuoteFissaAnno import PrezzoComponenteDispacciamento , PrezzoComponenteCommVendita 
 from ProveScadenza import Scadenza 
-from Detect_PrezzoMonorario import PrezzoComponenteEnergia, TipoPrezzo   #VerificaVariabilitàPrezzo --> approccio che estrae descrizione 
+from Detect_PrezzoMonorario import PrezzoComponenteEnergia, TipoPrezzo  
 from Detect_PrezzoMonorario_GAS import PrezzoComponenteGAS, TipoPrezzo_GAS
 
 from ProvePerNomeOfferta import Name

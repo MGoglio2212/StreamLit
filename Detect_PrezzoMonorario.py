@@ -162,26 +162,3 @@ def TipoPrezzo(Doc):
     
     return Prezzo['TipoPrezzo']
     
-
-    ########APPROCCIO FRANCESCO
-def VerificaVariabilitàPrezzo(Doc):
-    
-    v1 = r'\bPUN\b'
-    #v2 = r'^(?=.*\bPREZZO\b)(?=.*\bUNICO\b)(?=.*\bNAZIONALE\b).*$'
-    v2 = r'^(?=.*\bPREZZO\b).{0,30}UNICO.{0,30}NAZIONALE'
-    v3 = r'^(?=.*\bINGROSSO\b)(?=.*\bBORSA\b)(?=.*\bELETTRICA\b).*$'
-    v4 = r'^(?=.*\bFORMULA\b)(?=.*\bPREZZO\b)(?=.*\bENERGIA\b).*$'
-    v5 = r'PREZZO.{0,10}ENERGIA.{0,30}TIV'
-        
-    regexVar = [v1, v2, v3, v4, v5]
-    
-    regexVar = re.compile('|'.join(regexVar))
-    regexVar  
-
-
-    PriceExplanation= []
-    for i in Doc.split('.'):
-        if regexVar.search(i):
-            PriceExplanation.append(i)
- 
-    return PriceExplanation
