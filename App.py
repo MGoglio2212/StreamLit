@@ -137,11 +137,13 @@ if uploaded_file is not None:
     NPICKLE = NPICKLE + '.pkl'
     blobName_PICKLE = bucket.blob(NPICKLE)
     blobName_PICKLE.download_to_filename(NPICKLE)
+    xxx = pd.read_pickle(NPICKLE)
+    st.write(xxx)
     
     
     #se un pdf non ha tabelle non viene creato il pickl
     
-    
+    '''
     Result = ElabFile("", filename, NPICKLE)
     Result = Result[Result['Commodity'] == add_selectbox]
     Colonne = Result.columns 
@@ -215,3 +217,4 @@ if uploaded_file is not None:
     st.markdown("<h3 style='text-align: left; color: black;'>Codice Offerta:</h1>", unsafe_allow_html=True)
     st.write(CodiceOfferta.upper())
     
+'''
