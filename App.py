@@ -123,11 +123,11 @@ if uploaded_file is not None:
 
         PC = 'gs://pdf_cte/'+filename
         
-        '''
+        
         xxx = parse_table(project_id='extractpdf-298515',
                 input_uri = PC ,
                 filename = filename)
-        '''
+        
 
     #Scarico file pdf da gcp a questo punto
     blobName.download_to_filename(filename)
