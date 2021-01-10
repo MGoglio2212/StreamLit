@@ -123,14 +123,20 @@ if uploaded_file is not None:
     if filename.upper() in ListaFileGCP:
         pass  
     else:
+        
         Doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
+        Doc.insertPDF(Doc, to_page = 9)  # first 10 pages
+        Doc.save(filename=filename)
+        #blob.upload_from_file(doc2)
+        blobName.upload_from_filename(filename)
+        
+        '''
         doc2 = fitz.open()                 # new empty PDF
         doc2.insertPDF(Doc, to_page = 9)  # first 10 pages
         doc2.save(filename=filename)
-        st.write(doc2)
         #blob.upload_from_file(doc2)
         blobName.upload_from_filename(filename)
-
+        '''
 
 
         PC = 'gs://pdf_cte/'+filename
