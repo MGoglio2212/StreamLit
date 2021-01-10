@@ -26,7 +26,9 @@ import os
 
 from google.oauth2 import service_account
 
-cred = service_account.Credentials.from_service_account_file("ExtractPDF-8a6a8a0b366c.json")
+
+if os.path.isfile('ExtractPDF-8a6a8a0b366c.json'):
+    cred = service_account.Credentials.from_service_account_file("ExtractPDF-8a6a8a0b366c.json")
 
 
 def upload_to_bucket(blob_name, file, bucket_name, cred_key):
@@ -89,83 +91,85 @@ from pdfminer.pdfpage import PDFPage
 from io import StringIO
 
 if uploaded_file is not None:
+    if os.path.isfile('ExtractPDF-8a6a8a0b366c.json'):   #se c'è file con credenziali, faccio giro completo con anche upload su GCP e analisi tabelle con Google API
     
-    storage_client = storage.Client.from_service_account_json("ExtractPDF-8a6a8a0b366c.json")
+     
+        storage_client = storage.Client.from_service_account_json("ExtractPDF-8a6a8a0b366c.json")
+    
+        #print(buckets = list(storage_client.list_buckets())
+    
+        bucket = storage_client.get_bucket('pdf_cte')
+    
+        filename = uploaded_file.name
+        
+        blobName = bucket.blob(filename)
+        blobs = storage_client.list_blobs('pdf_cte')
+        
+        
+        ListaFileGCP = list()
+        for blob in blobs:
+           ListaFileGCP.append(blob.name.upper())
+            
+           
+        
+        
+        #se un pdf non ha tabelle non viene creato il pickle.
+        #quindi se ripasso lo stesso file, il pickle non viene trovato e viene fatta richiesta a google 
+        #quindi decido di modificare la condizione, filtrando per il fatto se il pdf è già presente sul bucket 
+        #se già presente, lo avrò già analizzato
+        #altrimenti lo carico e lo analizzo con api google 
+    
+            #devo scaricare anche il pickle    
+        NPICKLE = os.path.splitext(filename)[0]
+        NPICKLE = NPICKLE + '.pkl'
+        blobName_PICKLE = bucket.blob(NPICKLE)
+    
+        if filename.upper() in ListaFileGCP:
+            pass  
+        else:
+            
+            Doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
+            Doc.insertPDF(Doc, to_page = 9)  # first 10 pages
+            Doc.save(filename=filename)
+            #blob.upload_from_file(doc2)
+            blobName.upload_from_filename(filename)
+            
+            '''
+            doc2 = fitz.open()                 # new empty PDF
+            doc2.insertPDF(Doc, to_page = 9)  # first 10 pages
+            doc2.save(filename=filename)
+            #blob.upload_from_file(doc2)
+            blobName.upload_from_filename(filename)
+            '''
+    
+    
+            PC = 'gs://pdf_cte/'+filename
+            
+            
+            xxx = parse_table(project_id='extractpdf-298515',
+                    input_uri = PC ,
+                    filename = filename,
+                    cred = cred)
+            xxx.to_pickle(os.path.join(NPICKLE), protocol = 2)
+            blobName_PICKLE.upload_from_filename(NPICKLE)
+    
+        #Scarico file pdf da gcp a questo punto
+        blobName.download_to_filename(filename)
+    
+        blobName_PICKLE.download_to_filename(NPICKLE)
+    
+    
+        Result = ElabFile("", filename, NPICKLE)
 
-    #print(buckets = list(storage_client.list_buckets())
-
-    bucket = storage_client.get_bucket('pdf_cte')
-
-    filename = uploaded_file.name
-    
-    blobName = bucket.blob(filename)
-    blobs = storage_client.list_blobs('pdf_cte')
-    
-    
-    ListaFileGCP = list()
-    for blob in blobs:
-       ListaFileGCP.append(blob.name.upper())
-        
-       
-    
-    
-    #se un pdf non ha tabelle non viene creato il pickle.
-    #quindi se ripasso lo stesso file, il pickle non viene trovato e viene fatta richiesta a google 
-    #quindi decido di modificare la condizione, filtrando per il fatto se il pdf è già presente sul bucket 
-    #se già presente, lo avrò già analizzato
-    #altrimenti lo carico e lo analizzo con api google 
-
-        #devo scaricare anche il pickle    
-    NPICKLE = os.path.splitext(filename)[0]
-    NPICKLE = NPICKLE + '.pkl'
-    blobName_PICKLE = bucket.blob(NPICKLE)
-
-    if filename.upper() in ListaFileGCP:
-        pass  
-    else:
-        
-        Doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
-        Doc.insertPDF(Doc, to_page = 9)  # first 10 pages
-        Doc.save(filename=filename)
-        #blob.upload_from_file(doc2)
-        blobName.upload_from_filename(filename)
-        
-        '''
-        doc2 = fitz.open()                 # new empty PDF
-        doc2.insertPDF(Doc, to_page = 9)  # first 10 pages
-        doc2.save(filename=filename)
-        #blob.upload_from_file(doc2)
-        blobName.upload_from_filename(filename)
-        '''
+    elif not os.path.isfile('ExtractPDF-8a6a8a0b366c.json'): #non ho caricato file di credenziali, quindi faccio lettura diretta del file pdf senza passare da google (e non mostro stimaspesaanua)
+        Result = ElabFile("", uploaded_file, "")
 
 
-        PC = 'gs://pdf_cte/'+filename
-        
-        
-        xxx = parse_table(project_id='extractpdf-298515',
-                input_uri = PC ,
-                filename = filename,
-                cred = cred)
-        xxx.to_pickle(os.path.join(NPICKLE), protocol = 2)
-        blobName_PICKLE.upload_from_filename(NPICKLE)
-        
-        
-        
-        
-    #Scarico file pdf da gcp a questo punto
-    blobName.download_to_filename(filename)
-    
-    blobName_PICKLE.download_to_filename(NPICKLE)
-    xxx = pd.read_pickle(NPICKLE)
-    #st.write(xxx)
-    
-    
-    #se un pdf non ha tabelle non viene creato il pickl
-    
-    Result = ElabFile("", filename, NPICKLE)
+
     Result = Result[Result['Commodity'] == add_selectbox]
     Colonne = Result.columns 
     
+    #se un pdf non ha tabelle non viene creato il pickl    
     ColonneToBe = ['Commodity', 'Name', 'CodiceOfferta', 'StimaSpesaAnnua', 'Price', 'F1',
        'F2', 'F3', 'TipoPrezzo', 'PrezzoCV', 'PrezzoDISP', 'Scadenza',
        'Durata', 'FlagVerde', 'PrezzoVerde', 'File', 'Dir']
@@ -198,8 +202,9 @@ if uploaded_file is not None:
     st.markdown("<h3 style='text-align: left; color: black;'>Nome Offerta:</h1>", unsafe_allow_html=True)
     st.write(NomeOfferta.upper())
     
-    st.markdown("<h3 style='text-align: left; color: black;'>Stima spesa annua:</h1>", unsafe_allow_html=True)
-    st.write(StimaSpesaAnnua.upper())
+    if os.path.isfile('ExtractPDF-8a6a8a0b366c.json'):        
+        st.markdown("<h3 style='text-align: left; color: black;'>Stima spesa annua:</h1>", unsafe_allow_html=True)
+        st.write(StimaSpesaAnnua.upper())
     
     st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario materia prima:</h1>", unsafe_allow_html=True)
     st.write(Price.upper())
