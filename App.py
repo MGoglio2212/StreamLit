@@ -169,76 +169,81 @@ if uploaded_file is not None:
 
 
     Result = Result[Result['Commodity'] == add_selectbox]
-    Colonne = Result.columns 
     
-    #se un pdf non ha tabelle non viene creato il pickl    
-    ColonneToBe = ['Commodity', 'Name', 'CodiceOfferta', 'StimaSpesaAnnua', 'Price', 'F1',
-       'F2', 'F3', 'TipoPrezzo', 'PrezzoCV', 'PrezzoDISP', 'Scadenza',
-       'Durata', 'FlagVerde', 'PrezzoVerde', 'File', 'Dir']
-
-    for col in ColonneToBe:
-        if col in Colonne:
-            pass
-        else:
-            Result[col] = ""
-            
+    if len(Result) == 0:
+        st.write("Nel file non ci sono informazioni per la commodity selezionata")
+    else: 
+        
+        Colonne = Result.columns 
+        
+        #se un pdf non ha tabelle non viene creato il pickl    
+        ColonneToBe = ['Commodity', 'Name', 'CodiceOfferta', 'StimaSpesaAnnua', 'Price', 'F1',
+           'F2', 'F3', 'TipoPrezzo', 'PrezzoCV', 'PrezzoDISP', 'Scadenza',
+           'Durata', 'FlagVerde', 'PrezzoVerde', 'File', 'Dir']
     
-    NomeOfferta = str(Result['Name'].iloc[0])
-    CodiceOfferta = str(Result['CodiceOfferta'].iloc[0])
-    StimaSpesaAnnua = str(Result['StimaSpesaAnnua'].iloc[0])
-    Price = str(Result['Price'].iloc[0])
-    F1 = str(Result['F1'].iloc[0])
-    F2 = str(Result['F2'].iloc[0])
-    F3 = str(Result['F3'].iloc[0])
-    TipoPrezzo = str(Result['TipoPrezzo'].iloc[0])
-    PrezzoCV = str(Result['PrezzoCV'].iloc[0])
-    Scadenza = str(Result['Scadenza'].iloc[0])
-    Durata = str(Result['Durata'].iloc[0])
-    FlagVerde = str(Result['FlagVerde'].iloc[0])
-    PrezzoVerde = str(Result['PrezzoVerde'].iloc[0])
-    CodiceOfferta = str(Result['CodiceOfferta'].iloc[0])
-    Commodity = str(Result['Commodity'].iloc[0])
+        for col in ColonneToBe:
+            if col in Colonne:
+                pass
+            else:
+                Result[col] = ""
+                
+        
+        NomeOfferta = str(Result['Name'].iloc[0])
+        CodiceOfferta = str(Result['CodiceOfferta'].iloc[0])
+        StimaSpesaAnnua = str(Result['StimaSpesaAnnua'].iloc[0])
+        Price = str(Result['Price'].iloc[0])
+        F1 = str(Result['F1'].iloc[0])
+        F2 = str(Result['F2'].iloc[0])
+        F3 = str(Result['F3'].iloc[0])
+        TipoPrezzo = str(Result['TipoPrezzo'].iloc[0])
+        PrezzoCV = str(Result['PrezzoCV'].iloc[0])
+        Scadenza = str(Result['Scadenza'].iloc[0])
+        Durata = str(Result['Durata'].iloc[0])
+        FlagVerde = str(Result['FlagVerde'].iloc[0])
+        PrezzoVerde = str(Result['PrezzoVerde'].iloc[0])
+        CodiceOfferta = str(Result['CodiceOfferta'].iloc[0])
+        Commodity = str(Result['Commodity'].iloc[0])
+        
+        
     
+        st.markdown("<h3 style='text-align: left; color: black;'>Nome Offerta:</h1>", unsafe_allow_html=True)
+        st.write(NomeOfferta.upper())
+        
+        if os.path.isfile('ExtractPDF-8a6a8a0b366c.json'):        
+            st.markdown("<h3 style='text-align: left; color: black;'>Stima spesa annua:</h1>", unsafe_allow_html=True)
+            st.write(StimaSpesaAnnua.upper())
+        
+        st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario materia prima:</h1>", unsafe_allow_html=True)
+        st.write(Price.upper())
     
-
-    st.markdown("<h3 style='text-align: left; color: black;'>Nome Offerta:</h1>", unsafe_allow_html=True)
-    st.write(NomeOfferta.upper())
+        if Commodity == 'Energia':
+            st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F1:</h1>", unsafe_allow_html=True)
+            st.write(F1.upper())
+            st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F2:</h1>", unsafe_allow_html=True)
+            st.write(F2.upper())
+            st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F3:</h1>", unsafe_allow_html=True)
+            st.write(F3.upper())
+        
+        
+        st.markdown("<h3 style='text-align: left; color: black;'>Tipo Prezzo:</h1>", unsafe_allow_html=True)
+        st.write(TipoPrezzo.upper())
+        
+        st.markdown("<h3 style='text-align: left; color: black;'>Quota Commercializzazione Vendita:</h1>", unsafe_allow_html=True)
+        st.write(PrezzoCV.upper())
     
-    if os.path.isfile('ExtractPDF-8a6a8a0b366c.json'):        
-        st.markdown("<h3 style='text-align: left; color: black;'>Stima spesa annua:</h1>", unsafe_allow_html=True)
-        st.write(StimaSpesaAnnua.upper())
+        st.markdown("<h3 style='text-align: left; color: black;'>Scadenza:</h1>", unsafe_allow_html=True)
+        st.write(Scadenza.upper())
     
-    st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario materia prima:</h1>", unsafe_allow_html=True)
-    st.write(Price.upper())
-
-    if Commodity == 'Energia':
-        st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F1:</h1>", unsafe_allow_html=True)
-        st.write(F1.upper())
-        st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F2:</h1>", unsafe_allow_html=True)
-        st.write(F2.upper())
-        st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F3:</h1>", unsafe_allow_html=True)
-        st.write(F3.upper())
+        st.markdown("<h3 style='text-align: left; color: black;'>Durata:</h1>", unsafe_allow_html=True)
+        st.write(Durata.upper())
     
+        if Commodity == 'Energia':
+            st.markdown("<h3 style='text-align: left; color: black;'>Energia Verde Y/N:</h1>", unsafe_allow_html=True)
+            st.write(FlagVerde.upper())
     
-    st.markdown("<h3 style='text-align: left; color: black;'>Tipo Prezzo:</h1>", unsafe_allow_html=True)
-    st.write(TipoPrezzo.upper())
-    
-    st.markdown("<h3 style='text-align: left; color: black;'>Quota Commercializzazione Vendita:</h1>", unsafe_allow_html=True)
-    st.write(PrezzoCV.upper())
-
-    st.markdown("<h3 style='text-align: left; color: black;'>Scadenza:</h1>", unsafe_allow_html=True)
-    st.write(Scadenza.upper())
-
-    st.markdown("<h3 style='text-align: left; color: black;'>Durata:</h1>", unsafe_allow_html=True)
-    st.write(Durata.upper())
-
-    if Commodity == 'Energia':
-        st.markdown("<h3 style='text-align: left; color: black;'>Energia Verde Y/N:</h1>", unsafe_allow_html=True)
-        st.write(FlagVerde.upper())
-
-        st.markdown("<h3 style='text-align: left; color: black;'>Eventuale Prezzo opzione verde:</h1>", unsafe_allow_html=True)
-        st.write(PrezzoVerde.upper())
-    
-    st.markdown("<h3 style='text-align: left; color: black;'>Codice Offerta:</h1>", unsafe_allow_html=True)
-    st.write(CodiceOfferta.upper())
+            st.markdown("<h3 style='text-align: left; color: black;'>Eventuale Prezzo opzione verde:</h1>", unsafe_allow_html=True)
+            st.write(PrezzoVerde.upper())
+        
+        st.markdown("<h3 style='text-align: left; color: black;'>Codice Offerta:</h1>", unsafe_allow_html=True)
+        st.write(CodiceOfferta.upper())
     
