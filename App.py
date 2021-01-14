@@ -27,8 +27,8 @@ import os
 from google.oauth2 import service_account
 
 
-if os.path.isfile('ExtractPDF-8a6a8a0b366c.json'):
-    cred = service_account.Credentials.from_service_account_file("ExtractPDF-8a6a8a0b366c.json")
+if os.path.isfile('Test_Cred_HH.json'):
+    cred = service_account.Credentials.from_service_account_file("Test_Cred_HH.json")
 
 
 def upload_to_bucket(blob_name, file, bucket_name, cred_key):
@@ -98,19 +98,19 @@ if uploaded_file is not None:
     Doc2.insertPDF(Doc, to_page = 9)  # first 10 pages
     Doc2.save(filename=filename)
 
-    if os.path.isfile('ExtractPDF-8a6a8a0b366c.json'):   #se c'è file con credenziali, faccio giro completo con anche upload su GCP e analisi tabelle con Google API
+    if os.path.isfile('Test_Cred_HH.json'):   #se c'è file con credenziali, faccio giro completo con anche upload su GCP e analisi tabelle con Google API
     
      
-        storage_client = storage.Client.from_service_account_json("ExtractPDF-8a6a8a0b366c.json")
+        storage_client = storage.Client.from_service_account_json("Test_Cred_HH.json")
     
         #print(buckets = list(storage_client.list_buckets())
     
-        bucket = storage_client.get_bucket('pdf_cte')
+        bucket = storage_client.get_bucket('pdf_cte_v002')
     
  
         
         blobName = bucket.blob(filename)
-        blobs = storage_client.list_blobs('pdf_cte')
+        blobs = storage_client.list_blobs('pdf_cte_v002')
         
         
         ListaFileGCP = list()
@@ -140,10 +140,10 @@ if uploaded_file is not None:
             
 
     
-            PC = 'gs://pdf_cte/'+filename
+            PC = 'gs://pdf_cte_v002/'+filename
             
             
-            xxx = parse_table(project_id='extractpdf-298515',
+            xxx = parse_table(project_id='extractpdfv002',
                     input_uri = PC ,
                     filename = filename,
                     cred = cred)
@@ -156,7 +156,7 @@ if uploaded_file is not None:
         Result = ElabFile("", filename, NPICKLE)
 
 
-    elif not os.path.isfile('ExtractPDF-8a6a8a0b366c.json'): #non ho caricato file di credenziali, quindi faccio lettura diretta del file pdf senza passare da google (e non mostro stimaspesaanua)
+    elif not os.path.isfile('Test_Cred_HH.json'): #non ho caricato file di credenziali, quindi faccio lettura diretta del file pdf senza passare da google (e non mostro stimaspesaanua)
         Result = ElabFile("", filename , "")
 
 
@@ -202,7 +202,7 @@ if uploaded_file is not None:
         st.markdown("<h3 style='text-align: left; color: black;'>Nome Offerta:</h1>", unsafe_allow_html=True)
         st.write(NomeOfferta.upper())
         
-        if os.path.isfile('ExtractPDF-8a6a8a0b366c.json'):        
+        if os.path.isfile('Test_Cred_HH.json'):        
             st.markdown("<h3 style='text-align: left; color: black;'>Stima spesa annua:</h1>", unsafe_allow_html=True)
             st.write(StimaSpesaAnnua.upper())
         
