@@ -169,15 +169,15 @@ if uploaded_file is not None:
             
 
     
-    PC = 'gs://pdf_cte_v002/'+filename
+        PC = 'gs://pdf_cte_v002/'+filename
             
             
-    xxx = parse_table(project_id='extractpdfv002',
+        xxx = parse_table(project_id='extractpdfv002',
                     input_uri = PC ,
                     filename = filename,
                     cred = cred)
-    xxx.to_pickle(os.path.join(NPICKLE), protocol = 2)
-    blobName_PICKLE.upload_from_filename(NPICKLE)
+        xxx.to_pickle(os.path.join(NPICKLE), protocol = 2)
+        blobName_PICKLE.upload_from_filename(NPICKLE)
     
         #Scarico file pdf da gcp a questo punto
     blobName.download_to_filename(filename)
