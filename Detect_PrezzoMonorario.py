@@ -38,9 +38,10 @@ def PrezzoComponenteEnergia(Doc):
     r7 = 'MONORARIO'
     r8 = 'F0'
     r9 = 'PREZZO.{0,10}ENERGIA'
+    r10 = 'SPESA.{0,10}MATERIA.{0,10}ENERGIA'
 
-    regex = [r1, r2, r3, r4, r5, r6, r7, r8, r9]
-    
+    regex = [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10]
+  
     regex = re.compile('|'.join(regex))
     
     
