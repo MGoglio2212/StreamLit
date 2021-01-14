@@ -82,8 +82,8 @@ def StimaSpesaAnnua(NPICKLE, Value):
                 #se ci sono più righe per ora prendo la prima 
                 TableSel = (TableSel.head(1))
                 
-                ContaNum = TableSel['conta']
-                ContaNum = int(ContaNum[0])
+                #ContaNum = TableSel['conta']
+                #ContaNum = int(ContaNum[0])
                 #estraggo la riga         
                 RowTableSel = GGTab.merge(TableSel[['conta']], left_on = ['conta'], right_on = ['conta'], how = 'inner')
                 #se trovo valore nella colonna appena successiva
