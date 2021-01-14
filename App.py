@@ -185,10 +185,10 @@ if uploaded_file is not None:
     Result = ElabFile("", filename, NPICKLE)
 
 
-    '''
-    elif not os.path.isfile('Cred.json'): #non ho caricato file di credenziali, quindi faccio lettura diretta del file pdf senza passare da google (e non mostro stimaspesaanua)
-        Result = ElabFile("", filename , "")
-    '''
+    
+    #elif not os.path.isfile('Cred.json'): #non ho caricato file di credenziali, quindi faccio lettura diretta del file pdf senza passare da google (e non mostro stimaspesaanua)
+        #Result = ElabFile("", filename , "")
+    
 
 
     Result = Result[Result['Commodity'] == add_selectbox]
