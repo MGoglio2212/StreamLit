@@ -23,12 +23,39 @@ import pandas as pd
 import re
 from google.cloud import storage  
 import os
+import json 
 
 from google.oauth2 import service_account
 
 
-if os.path.isfile('Test_Cred_HH.json'):
-    cred = service_account.Credentials.from_service_account_file("Test_Cred_HH.json")
+def decryptHard(message):
+    newS=''
+    for i in range(len(message)):
+        if i%2==0:
+            newS=newS+chr(ord(message[i])-3)        
+        else:
+            newS=newS+chr(ord(message[i])+2)        
+     
+    return newS
+
+
+with open('MOD.json') as f:
+  data = json.load(f)
+  data['client_id'] = '106427812775067397180'
+  data['private_key_id'] = 'fde5773fdc37fe15f1560192ff4306706397af93'
+  data['private_key'] = '-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCvyRwCAL+0ytiO\nVZ+m9ECaCrgvE8RaeYE8hJg2J+2Wx7fzqeE+3COXNE/BpwzMuY39dEil8eiXnwOe\n/b9fYfIurTmyIh5qJbpkXNA6haecOg+JPi5jYtQF9tbRDKMXqeWvSlBN6cz0VHXR\nQMtbP3nvJVc8sjsd40+OY7xAT1B8mFmfRCy51fpJT/q6s9eK94qFK5XGiAAIprBq\nU6OES3WhCoOR73P9FIYkmpPVbCsnUmFdlnCf/i3RioCL+SrXsgXecP9jZ2xKsRtk\nRUgtZcAmKQPsHvvf1uYanhrrzjARbbcpyZwEti/fWxP3e3URTBMF1Kgi9hYRASYO\nMYWvyi4BAgMBAAECggEAAOjcYF3G4C1/CKCEjJl9tpZY3OSAKvwvOSQSAhC7k+DJ\ncMU3pUrAE+WZRo4h3LLWm2HFSPeLHbK80u8q9PhFp6xtjKCM0f2LPP72dGER7Jbn\n0uzbklfV80hzVN5Y/zO5vKoYp4iOzxJbUDeCveCCleRWctnUwLs3A4x8UkRezSA9\n+ppXlHMNOa4my9CY5OS5WEqZhA/w6qAh3kMo2jhLFEA2xXdlpb96ezXevmcGCg9y\nHCZC5qURCdfcP/1yJ3v5hhRxxYNyCyO9eGDnrjjk4z3No1km3PKAmmxHNl8otZ+T\njbv00xPP34b7hI/ZmU9vnB/KS0HN0wAWZg91k59YAQKBgQDx4SKZFg62l3lu+HL4\nMnlaveoknWhaJqeFNuBdNyz5RccToHrQ/r/kcxnHHp75XhIhvTCqjrF9a9FIaFxD\n51XQ2SULhfdjlY8bXZTH+Y3OdYVBCT1fMA5IO4Ul9Euw3r6IeEQI/LH/TChXEkUi\nO5RvXeINdLRBClnU4MzsZNl2gQKBgQC6DDVBIyj7/o0+4WDkQmryJjlgzvKPR8Ze\nVFxydWU4Gb6nw0fS6dqLeG7Pt3Lve1IMaUs4aLOvzhF4as0zPCDxUrJB1qsnsBs3\ntB+1Cu3Y3YFpISENLxVLLHfgMFFGFeCWieIA12l502DAcpHThBG4LmR2+gyNLTgk\nbuRak1/3gQKBgBug+dC+wkN9HfPdEVTkfxQsaVhxWoAhtjTzRcGgEdUPcWP+isjg\nsI6pzyH9j28wnaWY9LwmvIN1E1zP/uoKvLS0eRTN4qpPZR9dGyeUi+wvZF8/bPE4\njgkWM2lYdGTprJ3uDudv5e0hh+IaRidY4uWttaqP0B81zXkRjJbcFjMBAoGAKYgs\nIzxcG9T5Zv4dCReilCfgSzInh8C4Ebq3YH3AeMOWghDf6b92oAfkhM4pBDj9WfPv\nbMpCwo437C+7WyKjH/wb+wKW9qcjjE3TfjDQY8ce6n8Qx8ao9D0bDZr7qa+ckT56\ni0GLNDzxrkRlNViYNAt3NfAf+SwNCmUO6QFZPQECgYAo1KMLhRpvSnzBQri0OmJ/\newYNyPlv/SAJ8e6FD/I6QhUYWtuECkruT15KKZYhSJfZaw0/izLv73IurzsRBR6E\nl/tpe5CS+LeOR0/c0ZQQhA9sk5TNDGeL8tRWzJESQJa0ef2qXlsw9SQEpXAXlJym\nZzehyLj/JHWGUWe/r3DW/g==\n-----END PRIVATE KEY-----\n'
+  data['client_email'] = "extractpdfv002@extractpdfv002.iam.gserviceaccount.com"
+  data['project_id'] = 'extractpdfv002'
+  
+
+
+with open(r'Cred.json', 'w') as outfile:
+    json.dump(data, outfile)
+    
+
+
+
+cred = service_account.Credentials.from_service_account_file("Cred.json")
 
 
 def upload_to_bucket(blob_name, file, bucket_name, cred_key):
@@ -98,10 +125,10 @@ if uploaded_file is not None:
     Doc2.insertPDF(Doc, to_page = 9)  # first 10 pages
     Doc2.save(filename=filename)
 
-    if os.path.isfile('Test_Cred_HH.json'):   #se c'è file con credenziali, faccio giro completo con anche upload su GCP e analisi tabelle con Google API
+    if os.path.isfile('Cred.json'):   #se c'è file con credenziali, faccio giro completo con anche upload su GCP e analisi tabelle con Google API
     
      
-        storage_client = storage.Client.from_service_account_json("Test_Cred_HH.json")
+        storage_client = storage.Client.from_service_account_json("Cred.json")
     
         #print(buckets = list(storage_client.list_buckets())
     
@@ -156,7 +183,7 @@ if uploaded_file is not None:
         Result = ElabFile("", filename, NPICKLE)
 
 
-    elif not os.path.isfile('Test_Cred_HH.json'): #non ho caricato file di credenziali, quindi faccio lettura diretta del file pdf senza passare da google (e non mostro stimaspesaanua)
+    elif not os.path.isfile('Cred.json'): #non ho caricato file di credenziali, quindi faccio lettura diretta del file pdf senza passare da google (e non mostro stimaspesaanua)
         Result = ElabFile("", filename , "")
 
 
@@ -202,7 +229,7 @@ if uploaded_file is not None:
         st.markdown("<h3 style='text-align: left; color: black;'>Nome Offerta:</h1>", unsafe_allow_html=True)
         st.write(NomeOfferta.upper())
         
-        if os.path.isfile('Test_Cred_HH.json'):        
+        if os.path.isfile('Cred.json'):        
             st.markdown("<h3 style='text-align: left; color: black;'>Stima spesa annua:</h1>", unsafe_allow_html=True)
             st.write(StimaSpesaAnnua.upper())
         
