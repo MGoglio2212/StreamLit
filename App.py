@@ -125,67 +125,70 @@ if uploaded_file is not None:
     Doc2.insertPDF(Doc, to_page = 9)  # first 10 pages
     Doc2.save(filename=filename)
 
-    if os.path.isfile('Cred.json'):   #se c'è file con credenziali, faccio giro completo con anche upload su GCP e analisi tabelle con Google API
+    #if os.path.isfile('Cred.json'):   #se c'è file con credenziali, faccio giro completo con anche upload su GCP e analisi tabelle con Google API
     
-     
-        storage_client = storage.Client.from_service_account_json("Cred.json")
+    with open(r'Cred.json', 'w') as outfile:
+        json.dump(data, outfile)     
+
+    storage_client = storage.Client.from_service_account_json("Cred.json")
     
         #print(buckets = list(storage_client.list_buckets())
     
-        bucket = storage_client.get_bucket('pdf_cte_v002')
+    bucket = storage_client.get_bucket('pdf_cte_v002')
     
  
         
-        blobName = bucket.blob(filename)
-        blobs = storage_client.list_blobs('pdf_cte_v002')
+    blobName = bucket.blob(filename)
+    blobs = storage_client.list_blobs('pdf_cte_v002')
         
         
-        ListaFileGCP = list()
-        for blob in blobs:
-           ListaFileGCP.append(blob.name.upper())
+    ListaFileGCP = list()
+    for blob in blobs:
+        ListaFileGCP.append(blob.name.upper())
             
            
         
         
-        #se un pdf non ha tabelle non viene creato il pickle.
-        #quindi se ripasso lo stesso file, il pickle non viene trovato e viene fatta richiesta a google 
-        #quindi decido di modificare la condizione, filtrando per il fatto se il pdf è già presente sul bucket 
-        #se già presente, lo avrò già analizzato
-        #altrimenti lo carico e lo analizzo con api google 
+    #se un pdf non ha tabelle non viene creato il pickle.
+    #quindi se ripasso lo stesso file, il pickle non viene trovato e viene fatta richiesta a google 
+    #quindi decido di modificare la condizione, filtrando per il fatto se il pdf è già presente sul bucket 
+    #se già presente, lo avrò già analizzato
+    #altrimenti lo carico e lo analizzo con api google 
     
-            #devo scaricare anche il pickle    
-        NPICKLE = os.path.splitext(filename)[0]
-        NPICKLE = NPICKLE + '.pkl'
-        blobName_PICKLE = bucket.blob(NPICKLE)
+    #devo scaricare anche il pickle    
+    NPICKLE = os.path.splitext(filename)[0]
+    NPICKLE = NPICKLE + '.pkl'
+    blobName_PICKLE = bucket.blob(NPICKLE)
     
-        if filename.upper() in ListaFileGCP:
-            pass  
-        else:
+    if filename.upper() in ListaFileGCP:
+        pass  
+    else:
             
-            #blob.upload_from_file(doc2)
-            blobName.upload_from_filename(filename)
+        #blob.upload_from_file(doc2)
+        blobName.upload_from_filename(filename)
             
 
     
-            PC = 'gs://pdf_cte_v002/'+filename
+    PC = 'gs://pdf_cte_v002/'+filename
             
             
-            xxx = parse_table(project_id='extractpdfv002',
+    xxx = parse_table(project_id='extractpdfv002',
                     input_uri = PC ,
                     filename = filename,
                     cred = cred)
-            xxx.to_pickle(os.path.join(NPICKLE), protocol = 2)
-            blobName_PICKLE.upload_from_filename(NPICKLE)
+    xxx.to_pickle(os.path.join(NPICKLE), protocol = 2)
+    blobName_PICKLE.upload_from_filename(NPICKLE)
     
         #Scarico file pdf da gcp a questo punto
-        blobName.download_to_filename(filename)
-        blobName_PICKLE.download_to_filename(NPICKLE)
-        Result = ElabFile("", filename, NPICKLE)
+    blobName.download_to_filename(filename)
+    blobName_PICKLE.download_to_filename(NPICKLE)
+    Result = ElabFile("", filename, NPICKLE)
 
 
+    '''
     elif not os.path.isfile('Cred.json'): #non ho caricato file di credenziali, quindi faccio lettura diretta del file pdf senza passare da google (e non mostro stimaspesaanua)
         Result = ElabFile("", filename , "")
-
+    '''
 
 
     Result = Result[Result['Commodity'] == add_selectbox]
@@ -229,9 +232,9 @@ if uploaded_file is not None:
         st.markdown("<h3 style='text-align: left; color: black;'>Nome Offerta:</h1>", unsafe_allow_html=True)
         st.write(NomeOfferta.upper())
         
-        if os.path.isfile('Cred.json'):        
-            st.markdown("<h3 style='text-align: left; color: black;'>Stima spesa annua:</h1>", unsafe_allow_html=True)
-            st.write(StimaSpesaAnnua.upper())
+        #if os.path.isfile('Cred.json'):        
+        st.markdown("<h3 style='text-align: left; color: black;'>Stima spesa annua:</h1>", unsafe_allow_html=True)
+        st.write(StimaSpesaAnnua.upper())
         
         st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario materia prima:</h1>", unsafe_allow_html=True)
         st.write(Price.upper())
