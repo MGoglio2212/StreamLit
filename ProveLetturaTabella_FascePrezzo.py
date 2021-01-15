@@ -63,7 +63,7 @@ def StimaSpesaFasce(NPICKLE, Value):
     ####################################################################
     #elaboro il pickle
     ####################################################################
-	GGTab = pd.read_pickle(os.path.join(OutDir, NPICKLE))
+    GGTab = pd.read_pickle(os.path.join(OutDir, NPICKLE))
     GGTab['conta'] = GGTab.groupby(['Page','RowNum_Header','RowNum','Table']).cumcount()+1 
     
     
