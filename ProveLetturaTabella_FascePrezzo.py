@@ -63,97 +63,74 @@ def StimaSpesaFasce(NPICKLE, Value):
     ####################################################################
     #elaboro il pickle
     ####################################################################
-    GGTab = pd.read_pickle(NPICKLE)
+    GGTab = pd.read_pickle(os.path.join(OutDir, NPICKLE))
     GGTab['conta'] = GGTab.groupby(['Page','RowNum_Header','RowNum','Table']).cumcount()+1 
     
-    
-
-    
-    regexNum1 = r'0,\d+'
-    #regexNum2 = r'0\.\d+'
-        
-    regexNum = [regexNum1]  #, regexNum2]
-    
-    regexNum = re.compile('|'.join(regexNum))
-    
-
     Value1 = Value
-    Value2 = Value.replace('0','O')
-    #Value3 = Value.replace('.','')
+    Value2 = Value.replace(',','')
+    Value3 = Value.replace('.','')
     
     GuessOverall = pd.DataFrame(columns=['Value'])
     App = pd.DataFrame(columns=['Value'])
     
     Guess = ""
-    
+        
     Rid = GGTab.drop(['Table', 'RowNum', 'Page', 'RowNum_Header', 'conta'], axis=1)
     ListaCol = Rid.columns
-    
     for prevs, col, nexts, nexts_2 in previous_and_next(ListaCol):
-   
-
-        if col not in ['Table', 'RowNum', 'Page', 'RowNum_Header', 'conta']:
-            try:
-
+    
+        
+            if col not in ['Table', 'RowNum', 'Page', 'RowNum_Header']:
                 #seleziono pagina e tabella dove trovo il valore di riferimento
-                TableSel = GGTab[(GGTab[col].str.contains(Value1, na = False)) | (GGTab[col].str.contains(Value2, na = False))]
+    
+                TableSel = GGTab[(GGTab[col].str.replace(" ","") == Value1) | 
+                                 (GGTab[col].str.replace(" ","") == Value2) | 
+                                 (GGTab[col].str.replace(" ","") == Value3)]
                 #se trova un match estrae tutta la tabella 
                 if len(TableSel) != 0:
                     print('ooo')
                     #se ci sono più righe per ora prendo la prima 
-                    #TableSel = (TableSel.head(1))
+                    TableSel = (TableSel.head(1))
                     
+                    #ContaNum = TableSel['conta']
+                    #ContaNum = int(ContaNum[0])
                     #estraggo la riga         
                     RowTableSel = GGTab.merge(TableSel[['conta']], left_on = ['conta'], right_on = ['conta'], how = 'inner')
-                    #se trovo valore nella stessa colonna
-                    RowTableSel['Guess'] = RowTableSel[col].str.findall(regexNum)
-                    RowTableSel['Guess'] = RowTableSel['Guess'].str[0] #se ne ha trovati più di uno, prendo il primo
-                    Guess = RowTableSel['Guess']
-                      
+                    #se trovo valore nella colonna appena successiva
+                    Guess = RowTableSel[nexts]
+                    #se non trovo valore nella colonna successiva vado alla riga successiva della stessa tabella:
+                    if Guess.isnull().all() or Guess.eq("").all():
+                        print('aaa')
+                        
+                        TableSel_2 = GGTab.merge(TableSel[['Page', 'Table', 'RowNum']], left_on = ['Page', 'Table', 'RowNum'], right_on = ['Page','Table','RowNum'], how = 'inner')
+                        TableSel_2['ColShift'] = TableSel_2[col].shift(+1)
+                        TableSel_2 = TableSel_2[(TableSel_2['ColShift'].str.replace(" ","") == Value1) | 
+                                                (TableSel_2['ColShift'].str.replace(" ","") == Value2) |
+                                                (TableSel_2['ColShift'].str.replace(" ","") == Value3)]
+                        #cerco prima nella stessa colonna della riga successiva
+                        Guess = TableSel_2[col]
+        
+                        if Guess.isnull().all() or Guess.eq("").all():
+                            #cerco nella colonna successiva della riga successiva
+                            Guess = TableSel_2[nexts] 
+        
+                            #se ancora nullo, vado a 2 colonne successive (vedi ENI)
+                            if Guess.isnull().all() or Guess.eq("").all():
+                                Guess = RowTableSel[nexts_2]
+                                if Guess.isnull().all() or Guess.eq("").all():
+                                    #cerco nella colonna successiva della riga successiva
+                                    Guess = TableSel_2[nexts_2] 
+                                else:
+                                    break
+                            else:
+                                break
+                        else:
+                            break
+                    else:
+                        break
                     
-                    if Guess.isnull().all() or Guess.eq("").all() or len(Guess.iloc[0]) == 0:
-                        print('zz')
-                        #se trovo valore nella colonna appena successiva
-                        RowTableSel['Guess'] = RowTableSel[nexts].str.findall(regexNum)
-                        Guess = RowTableSel['Guess']
-                    
-                        #se non trovo valore nella colonna successiva vado alla riga successiva della stessa tabella:
-                        if Guess.isnull().all() or Guess.eq("").all() or len(Guess.iloc[0]) == 0:
-                            print('aaa')
-                            
-                            TableSel_2 = GGTab.merge(TableSel[['Page', 'Table', 'RowNum']], left_on = ['Page', 'Table', 'RowNum'], right_on = ['Page','Table','RowNum'], how = 'inner')
-                            TableSel_2['ColShift'] = TableSel_2[col].shift(+1)
-                            TableSel_2 = TableSel_2[(TableSel_2['ColShift'].str.contains(Value1, na = False)) | (TableSel_2['ColShift'].str.contains(Value2, na = False))]
-                            #cerco prima nella stessa colonna della riga successiva
-                            TableSel_2['Guess'] = TableSel_2[col].str.findall(regexNum)
-                            TableSel_2['Guess'] = TableSel_2['Guess'].str[0] #se ne ha trovati più di uno, prendo il primo
-                            Guess = TableSel_2['Guess']
-                            TableSel_2 = TableSel_2.drop(['Guess'], axis = 1)
-                            
-            
-                            if Guess.isnull().all() or Guess.eq("").all() or len(Guess.iloc[0]) == 0:
-                                print('uu')
-                                #cerco nella colonna successiva della riga successiva
-                                TableSel_2['Guess'] = (TableSel_2[nexts].str.findall(regexNum))
-                                TableSel_2['Guess'] = TableSel_2['Guess'].str[0] #se ne ha trovati più di uno, prendo il primo
-                                Guess = TableSel_2['Guess'] 
-            
-                                #se ancora nullo, vado a 2 colonne successive (vedi ENI)
-                                if Guess.isnull().all() or Guess.eq("").all() or len(Guess.iloc[0]) == 0:
-                                    RowTableSel['Guess'] = RowTableSel[nexts_2].str.findall(regexNum)
-                                    Guess = RowTableSel['Guess']
-                                    if Guess.isnull().all() or Guess.eq("").all() or len(Guess.iloc[0]) == 0:
-                                        #cerco nella colonna successiva della riga successiva
-                                        TableSel_2['Guess'] = TableSel_2[nexts_2].str.findall(regexNum)
-                                        TableSel_2['Guess'] = TableSel_2['Guess'].str[0] #se ne ha trovati più di uno, prendo il primo
-                                        Guess = TableSel_2['Guess'] 
-                            
-                            
-                    App['Value'] = pd.Series(Guess)        
-                    GuessOverall = GuessOverall.append(App)
-                    
-            except:
-                pass
+    App['Value'] = pd.Series(Guess)        
+    GuessOverall = GuessOverall.append(App)
     
     return GuessOverall['Value']
             
