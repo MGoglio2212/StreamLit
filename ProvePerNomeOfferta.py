@@ -267,6 +267,9 @@ def Name(directory, filename):
     Structure.sort_values(['Len'], ascending=[True])
     Structure = Structure.nsmallest(1, 'TagNum', keep = 'last')   #in base al sort di prima, prendo quello più lungo 
    
-
+    #modifiche puntuali su Engie (nome offerta è un'immagine)
+    if "223_E3" in filename:
+        Structure['text'] = "Energia 3.0" 
+        
         
     return Structure['text']    

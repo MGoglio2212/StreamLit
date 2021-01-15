@@ -90,8 +90,10 @@ add_selectbox = st.sidebar.selectbox('',
 st.sidebar.subheader("Carica un file")
 uploaded_file = st.sidebar.file_uploader("", type = "pdf")
 
-st.markdown("<h1 style='text-align: center; color: black;'>ESTRATTORE CTE</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: black;'>ESTRATTORE Info da file CTE - SCHEDA CONFRONTABILITA'</h1>", unsafe_allow_html=True)
 st.markdown("<h2 style='text-align: center; color: black;'>Energia Gas</h2>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center; color: black;'>Caricare file pdf e selezionare commodity per cui si vogliono informazioni</h4>", unsafe_allow_html=True)
+
 
 
 import fitz
@@ -126,6 +128,7 @@ if uploaded_file is not None:
     Doc2.save(filename=filename)
 
     #if os.path.isfile('Cred.json'):   #se c'è file con credenziali, faccio giro completo con anche upload su GCP e analisi tabelle con Google API
+    
     
     with open(r'Cred.json', 'w') as outfile:
         json.dump(data, outfile)     
@@ -267,6 +270,6 @@ if uploaded_file is not None:
             st.markdown("<h3 style='text-align: left; color: black;'>Eventuale Prezzo opzione verde:</h1>", unsafe_allow_html=True)
             st.write(PrezzoVerde.upper())
         
-        st.markdown("<h3 style='text-align: left; color: black;'>Codice Offerta:</h1>", unsafe_allow_html=True)
-        st.write(CodiceOfferta.upper())
+        #st.markdown("<h3 style='text-align: left; color: black;'>Codice Offerta:</h1>", unsafe_allow_html=True)
+        #st.write(CodiceOfferta.upper())
     
