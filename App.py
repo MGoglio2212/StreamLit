@@ -90,11 +90,11 @@ add_selectbox = st.sidebar.selectbox('',
 st.sidebar.subheader("Carica un file")
 uploaded_file = st.sidebar.file_uploader("", type = "pdf")
 
-st.markdown("<h1 style='text-align: center; color: black;'>Estrattore Informazioni</h1>", unsafe_allow_html=True)
-st.markdown("<h1 style='text-align: center; color: black;'>da file CTE - SCHEDA CONFRONTABILITA'</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: black;'>Estrattore Informazioni file CTE - SC</h1>", unsafe_allow_html=True)
 st.markdown("<h2 style='text-align: center; color: black;'>Energia Gas</h2>", unsafe_allow_html=True)
 st.markdown("<h4 style='text-align: center; color: black;'>Caricare file pdf e selezionare commodity per cui si vogliono informazioni</h4>", unsafe_allow_html=True)
 
+st.markdown("", unsafe_allow_html=True)
 st.markdown("", unsafe_allow_html=True)
 
 
