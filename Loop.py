@@ -178,11 +178,11 @@ def ElabFile(directory, filename, NPICKLE):
 
             try:
                 if Com == 'Energia':
-                    SpA = StimaSpesaAnnua(NPICKLE, "2.700")
+                    #SpA = StimaSpesaAnnua(NPICKLE, "2.700")
                     Res.at[0,'StimaSpesaAnnua'] = SpA.iloc[0]
                     #Res['StimaSpesaAnnua'] = SpA 
                 elif Com == 'Gas':
-                    SpA = StimaSpesaAnnua(NPICKLE, "1.400")
+                    #SpA = StimaSpesaAnnua(NPICKLE, "1.400")
                     Res.at[0,'StimaSpesaAnnua'] = SpA.iloc[0]
                     #Res['StimaSpesaAnnua'] = SpA 
                 
@@ -203,7 +203,7 @@ def ElabFile(directory, filename, NPICKLE):
                 #se va in errore, applico altra fuznione 
                 #F0 lo assegno al Prezzo unico
                 try:
-                    PF0 = StimaSpesaFasce(NPICKLE, "F0")            
+                    #PF0 = StimaSpesaFasce(NPICKLE, "F0")            
                     Res.at[0,'Price'] = PF0.iloc[0]
            
                 except:
@@ -228,7 +228,7 @@ def ElabFile(directory, filename, NPICKLE):
                 ### F1 ####    
                 Res['F1'] = ""
                 try:
-                    PF1 = StimaSpesaFasce(NPICKLE, "F1")
+                    #PF1 = StimaSpesaFasce(NPICKLE, "F1")
                     Res.at[0,'F1'] = PF1.iloc[0]
                 
                 except:
