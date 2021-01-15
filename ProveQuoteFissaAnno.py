@@ -48,12 +48,13 @@ def PrezzoComponenteCommVendita(Doc):
     r3 = 'PCV'
     r5 = 'COMMERCIALIZZAZIONE.{0,10}VENDITA'
     r6 = 'CORRISPETTIVO.{0,10}COMMERCIALIZZAZIONE'
+    r7 = 'COMPONENTE.{0,10}COMMERCIALIZZAZIONE'
     
     #introdotte per il gas
     r4 = '(?<!MATERIA PRIMA.{1,80})QVD'
 
 
-    regex_CV = [r1,r2,r3, r4, r5,r6]
+    regex_CV = [r1,r2,r3,r4,r5,r6,r7]
     
     regex_CV = re.compile('|'.join(regex_CV))
     
@@ -67,9 +68,9 @@ def PrezzoComponenteCommVendita(Doc):
     #r1 = '-?\d*,?\d+\s'
     #r2 = '-?\d*\.?\d+\s'
 
-    r1 = '(?<!ARTICOLO.{0,10})-?\s+\d*,?\d+\s'
+    r1 = '(?<!ARTICOLO.{0,10})-?\s+\d*,?\d+\s(?!.{0,5}MESI)'
     #r2 = '-?\s\d*\.?\d+\s'
-    r3 = '(?<!ARTICOLO.{0,10})-?\s+\d*,?\d+€'
+    r3 = '(?<!ARTICOLO.{0,10})-?\s+\d*,?\d+€(?!.{0,5}MESI)'
     #r4 = '-?\s\d*\.?\d+€'
    
 
