@@ -186,7 +186,7 @@ if uploaded_file is not None:
         blobName_PICKLE.upload_from_filename(NPICKLE)
     
         #Scarico file pdf da gcp a questo punto
-    blobName.download_to_filename(filename)
+    #blobName.download_to_filename(filename)
     blobName_PICKLE.download_to_filename(NPICKLE)
     Result = ElabFile("", filename, NPICKLE)
 
