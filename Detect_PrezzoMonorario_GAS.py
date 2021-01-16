@@ -38,7 +38,8 @@ def PrezzoComponenteGAS(Doc):
     r8 = 'SPESA.{0,10}MATERIA.{0,10}GAS.{0,10}NATURALE'
     r9 = 'PREZZO.{0,20}MATERIA.{0,20}PRIMA'
     r10 = 'COSTI.{0,40}MATERIA.{0,20}PRIMA'
-    regex = [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10]
+    r11 = 'PREZZO.{0,5}NETTO'
+    regex = [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11]
     
     regex = re.compile('|'.join(regex))
     
