@@ -28,8 +28,11 @@ def PrezzoComponenteEnergiaF1(Doc):
     
     
     #le inserisco come regular expression perchè non so quanti spazi ci sono e se magari c'è una new line (\s+)
+    #enel ha rinominato le fasce in blu / arancione 
     r1 = 'F1'
-    regex = [r1]
+    r2 = 'FASCIA.{0,10}ARANCIONE'
+    
+    regex = [r1, r2]
     
     regex = re.compile('|'.join(regex))
     
@@ -112,7 +115,8 @@ def PrezzoComponenteEnergiaF2(Doc):
     #le inserisco come regular expression perchè non so quanti spazi ci sono e se magari c'è una new line (\s+)
     r1 = 'F2'
     r2 = 'F23'
-    regex = [r1, r2]
+    r3 = 'FASCIA.{0,10}BLU'
+    regex = [r1, r2,r3]
     
     regex = re.compile('|'.join(regex))
     
@@ -198,7 +202,9 @@ def PrezzoComponenteEnergiaF3(Doc):
     #le inserisco come regular expression perchè non so quanti spazi ci sono e se magari c'è una new line (\s+)
     r1 = 'F3'
     r2 = 'F23'
-    regex = [r1, r2]
+    r3 = 'FASCIA.{0,10}BLU'
+    
+    regex = [r1, r2,r3]
     
     regex = re.compile('|'.join(regex))
     
