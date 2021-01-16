@@ -52,8 +52,8 @@ def Scadenza(Doc):
     #prendo possibili date
     d1 = '\d\d\\\d\d\\\d{2,4}'   #10\10\20 oppure 10\10\2020
     d2 = '\d\d/\d\d/\d{2,4}'     #10/10/20 oppure 10/10/2020
-    d3 = '\d\d\\\d\d\\\d{2,4}.AL.\d\d\\\d\d\\\d{2,4}'  #10\10\20 AL 20\20\20 (con anni anche a 4)
-    d4 = '\d\d/\d\d/\d{2,4}.AL.\d\d/\d\d/\d{2,4}'     #10/10/20 AL 20/20/20 (con anni anche a 4)
+    d3 = '\d\d\\\d\d\\\d{2,4}.{0,5}AL.{0,5}\d\d\\\d\d\\\d{2,4}'  #10\10\20 AL 20\20\20 (con anni anche a 4)
+    d4 = '\d\d/\d\d/\d{2,4}.{0,5}AL.{0,5}\d\d/\d\d/\d{2,4}'     #10/10/20 AL 20/20/20 (con anni anche a 4)
     
     
     d = [d4, d3 ,d1, d2]   #le regex potrebbero essere sovrapposte,metto prima 
@@ -85,7 +85,7 @@ def Scadenza(Doc):
     PossiblePrice = PossiblePrice[PossiblePrice['Price'].apply(lambda row: len(row)) > 0]
     '''
     
-    
+    Doc[20:80]
     
     Base['key'] = 0
     PossiblePrice['key'] = 0
