@@ -97,6 +97,30 @@ def Scadenza(Doc):
     
     Prezzo.sort_values(['dist', 'Price'], ascending=[True, False])
     Prezzo = Prezzo.nsmallest(1, 'dist', keep = 'last')   #in base al sort di prima, in caso di pari merito su distanza prendo la data più avanti
- 
     
+    ################################
+    #####PER ENI, LA SCADENZA E' IN ALTO A DX, MA VIENE LETTA NEL PDF AL CONTRARIO E QUINDI POSSO (DEVO) ACCETTARE DISTANZE NEGATIVE
+    ################################
+    if len(Prezzo) == 0:
+        
+        try:
+            d4 = 'DAL \d\d/\d\d/\d{2,4}.AL.\d\d/\d\d/\d{2,4}.{0,3}CONDIZIONI.{0,20}VALIDE'     #10/10/20 AL 20/20/20 (con anni anche a 4)
+             
+            regexNum = re.compile(d4)
+            NumberPos = [m.start() for m in regexNum.finditer(Doc)]
+            NumberValue = regexNum.findall(Doc)[0]
+            st = NumberValue.find(' AL')+3
+            se = st + 11
+            NumberValue = NumberValue[st:se]
+            Prezzo = Prezzo.append({'Price': NumberValue},  ignore_index=True)
+    #sempre per eni nelle offerte dual lato gas non viene presa la parte in alto --> lo prendo da codice offerta ;
+        except:
+            d4 = '_\d{8,8}_\d{8,8}'             
+            regexNum = re.compile(d4)
+            NumberPos = [m.start() for m in regexNum.finditer(Doc)]
+            NumberValue = regexNum.findall(Doc)[0]
+            NumberValue = NumberValue[10:18]
+            NumberValue_2 = NumberValue[6:8]+"/"+NumberValue[4:6]+"/"+NumberValue[0:4]
+            Prezzo = Prezzo.append({'Price': NumberValue_2},  ignore_index=True)    
+ 
     return Prezzo['Price']
