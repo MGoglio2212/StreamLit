@@ -181,7 +181,7 @@ def ElabFile(directory, filename, NPICKLE):
 
             try:
                 if Com == 'Energia':
-                    SpA = StimaSpesaAnnua(directory, filename, "2.700", Tabella)
+                    SpA = StimaSpesaAnnua(NPICKLE, "2.700", Tabella)
                     Res.at[0,'StimaSpesaAnnua'] = SpA.iloc[0]
                     #Res['StimaSpesaAnnua'] = SpA 
                 elif Com == 'Gas':
@@ -214,7 +214,7 @@ def ElabFile(directory, filename, NPICKLE):
                         
                     #a seconda che nel testo venga prima "nord-occidentale" o "nord-orientale" seleziono la prima o seconda tabella della scheda confrontabilita
                         
-                    SpA = StimaSpesaAnnua(directory, filename, "1.400", Tabella)
+                    SpA = StimaSpesaAnnua(NPICKLE, "1.400", Tabella)
                     Res.at[0,'StimaSpesaAnnua'] = SpA.iloc[0]
                     #Res['StimaSpesaAnnua'] = SpA 
                 
