@@ -47,7 +47,7 @@ def upload_to_bucket(blob_name, path_to_file, bucket_name, cred_key):
     return blob.public_url
 
 
-def StimaSpesaAnnua(NPICKLE, Value):
+def StimaSpesaAnnua(NPICKLE, Value, Tabella):
     
     ####################################################################
     #elaboro il pickle
@@ -79,9 +79,11 @@ def StimaSpesaAnnua(NPICKLE, Value):
             #se trova un match estrae tutta la tabella 
             if len(TableSel) != 0:
                 print('ooo')
-                #se ci sono più righe per ora prendo la prima 
-                TableSel = (TableSel.head(1))
-                
+                #predno la tabella in base al check che viene fatto nel programma Loop, se viene prima NordOrientale o NordOccidentale
+                #(per il Gas) --- Per energia prendo sempre la prima
+                    
+                TableSel = TableSel.iloc[[Tabella]]
+
                 #ContaNum = TableSel['conta']
                 #ContaNum = int(ContaNum[0])
                 #estraggo la riga         

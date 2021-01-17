@@ -176,13 +176,45 @@ def ElabFile(directory, filename, NPICKLE):
 
 
 
+            Tabella = 0 #quale tabella da guardare nelle funzioni che analizzano tabelle da API google 
+    
+
             try:
                 if Com == 'Energia':
-                    SpA = StimaSpesaAnnua(NPICKLE, "2.700")
+                    SpA = StimaSpesaAnnua(directory, filename, "2.700", Tabella)
                     Res.at[0,'StimaSpesaAnnua'] = SpA.iloc[0]
                     #Res['StimaSpesaAnnua'] = SpA 
                 elif Com == 'Gas':
-                    SpA = StimaSpesaAnnua(NPICKLE, "1.400")
+                        
+                    try:
+                        NOvest1 = Doc.find("AMBITO TARIFFARIO: NORD OCCIDENTALE")
+                        if NOvest1 == -1:
+                            NOvest1 = 9999999 
+                            
+                        NOvest2 = Doc.find("CLIENTE DOMESTICO IN AREA NORD OCCIDENTALE")
+                        if NOvest2 == -1:
+                            NOvest2 = 9999999
+                            
+                        NOvest = min(NOvest1, NOvest2)
+                                
+                        NEst1 = Doc.find("AMBITO TARIFFARIO: NORD ORIENTALE")
+                        if NEst1 == -1:
+                            NEst1 = 9999999 
+                            
+                        NEst2 = Doc.find("CLIENTE DOMESTICO IN AREA NORD ORIENTALE")
+                        if NEst2 == -1:
+                            NEst2 = 9999999
+                                
+                        NEst = min(NEst1, NEst2)
+                            
+                        if NOvest > NEst and NOvest!=9999999:
+                            Tabella = 1
+                    except:
+                        pass
+                        
+                    #a seconda che nel testo venga prima "nord-occidentale" o "nord-orientale" seleziono la prima o seconda tabella della scheda confrontabilita
+                        
+                    SpA = StimaSpesaAnnua(directory, filename, "1.400", Tabella)
                     Res.at[0,'StimaSpesaAnnua'] = SpA.iloc[0]
                     #Res['StimaSpesaAnnua'] = SpA 
                 
