@@ -29,13 +29,13 @@ def Scadenza(Doc):
     r1 = 'CONDIZIONI.{,40}VALID'
     r2 = 'ADESION.{,10}ENTRO'
     r3 = 'ADESION.{,10}FINO'
-    r4 = 'VALID.{,5}FINO'
+    r4 = 'VALID.{,25}FINO'
     r5 = 'SOTTOSCRIVIBIL.{,30}'
     r6 = 'VALID.{,5}DA.{,15}A\s'
     r7 = 'ENTRO IL'
     #r8 = 'DAL\s.{,15}AL\s'
     r8 = 'SCADENZA'
-    r9 = 'VALID.{,10}ENTRO'
+    r9 = 'VALID.{,25}ENTRO'
     r10 = 'VALIDIT.{,10}OFFERTA'
     
     
@@ -85,12 +85,20 @@ def Scadenza(Doc):
     PossiblePrice = PossiblePrice[PossiblePrice['Price'].apply(lambda row: len(row)) > 0]
     '''
     
-    Doc[20:80]
-    
     Base['key'] = 0
     PossiblePrice['key'] = 0
     
     Prezzo = Base.merge(PossiblePrice, how='outer')
+    
+    import datetime 
+    try:
+        Prezzo['Date'] = Prezzo.apply(lambda row: datetime.datetime.strptime(row.Price, '%d/%m/%Y'), axis = 1)
+    except:
+        pass
+    
+    Prezzo = Prezzo[(Prezzo['Date'] > '01/11/2020') | (Prezzo['Date'].isnull())]
+    
+    
     Prezzo['dist'] = Prezzo.apply(lambda row: row.Position - row.PositionBase, axis = 1)
     #FILTRO PER LE DISTANZE POSITIVE (IL NUMERO VIENE DOPO LA PAROLA, OPPURE NEGATIVE MOLTO PICCOLE DOVE QUINDI LA BASE VIENE IMMEDIATAMENTE DOPO )
     Prezzo = Prezzo[Prezzo['dist'] > 0]

@@ -34,7 +34,7 @@ def energiaVerde(Doc, PE):
     
     #le inserisco come regular expression perchè non so quanti spazi ci sono e se magari c'è una new line (\s+)
     r1 = r'GREEN(?!\s+NETWORK)'
-    r2 = r'(?<!NUMERO.|N°.|N.)VERDE'
+    r2 = r'(?<!NUMERO.{0,20}|N°.{0,20}|N.{0,20})VERDE'
     r3 = r'100%.{0,10}FONTI.{0,20}RINNOVABILI'
     r4 = r'SOLO.{0,10}FONTI.{0,20}RINNOVABILI'
     r5 = r'OPZIONE.{0,30}RINNOVABI'
@@ -53,6 +53,7 @@ def energiaVerde(Doc, PE):
     Base = [m.start() for m in regex.finditer(Doc)]
     Base = pd.DataFrame(Base, columns = ['PositionBase'])
       
+    
     
     #regexNum1 = r'-?\d*\,.?\d+'
     #regexNum2 = r'-?\d*\..?\d+'
