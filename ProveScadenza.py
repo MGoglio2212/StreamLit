@@ -90,13 +90,13 @@ def Scadenza(Doc):
     
     Prezzo = Base.merge(PossiblePrice, how='outer')
     
+    
     import datetime 
     try:
         Prezzo['Date'] = Prezzo.apply(lambda row: datetime.datetime.strptime(row.Price, '%d/%m/%Y'), axis = 1)
+        Prezzo = Prezzo[(Prezzo['Date'] > '01/11/2020') | (Prezzo['Date'].isnull())]
     except:
         pass
-    
-    Prezzo = Prezzo[(Prezzo['Date'] > '01/11/2020') | (Prezzo['Date'].isnull())]
     
     
     Prezzo['dist'] = Prezzo.apply(lambda row: row.Position - row.PositionBase, axis = 1)
