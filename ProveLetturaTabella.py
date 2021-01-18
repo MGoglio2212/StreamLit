@@ -122,6 +122,10 @@ def StimaSpesaAnnua(NPICKLE, Value, Tabella):
                     break
                     
     App['Value'] = pd.Series(Guess)        
+    App['Value'] = App.apply(lambda row: row.Value.replace(".",""), axis = 1) 
+    App['Value'] = App.apply(lambda row: row.Value.replace(",","."), axis = 1) 
+    App['Value'] = App.apply(lambda row: row.Value.replace("€",""), axis = 1) 
+
     GuessOverall = GuessOverall.append(App)
     
     return GuessOverall['Value']

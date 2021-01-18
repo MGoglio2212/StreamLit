@@ -185,7 +185,9 @@ if uploaded_file is not None:
         xxx.to_pickle(os.path.join(NPICKLE), protocol = 2)
         blobName_PICKLE.upload_from_filename(NPICKLE)
     
-        #Scarico file pdf da gcp a questo punto
+        #Scarico file pdf da gcp a questo punto --> no...perchè se il file passato si chiama allo stesso modo di uno già in GCP
+        #ma è la versione nuova dell'offerta, se scarico da GCP prenderei quello vecchio. ALmeno così sono sicuro di prendere file 
+        #dell'utente (resta problema sul pickle però..che se no ogni volta dovrei richiamare l'API)
     #blobName.download_to_filename(filename)
     blobName_PICKLE.download_to_filename(NPICKLE)
     Result = ElabFile("", filename, NPICKLE)
@@ -273,6 +275,9 @@ if uploaded_file is not None:
             st.markdown("<h3 style='text-align: left; color: black;'>Eventuale Prezzo opzione verde:</h1>", unsafe_allow_html=True)
             st.write(PrezzoVerde.upper())
         
+        st.markdown("<h3 style='text-align: left; color: black;'>Caratteristiche Aggiuntive:</h1>", unsafe_allow_html=True)
+        st.write(CaratteristicheAggiuntive.upper())
+    
         #st.markdown("<h3 style='text-align: left; color: black;'>Codice Offerta:</h1>", unsafe_allow_html=True)
         #st.write(CodiceOfferta.upper())
     
