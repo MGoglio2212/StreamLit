@@ -234,6 +234,7 @@ if uploaded_file is not None:
         PrezzoVerde = str(Result['PrezzoVerde'].iloc[0])
         CodiceOfferta = str(Result['CodiceOfferta'].iloc[0])
         Commodity = str(Result['Commodity'].iloc[0])
+        CaratteristicheAggiuntive = str(Result['CaratteristicheAggiuntive'].iloc[0])
         
         
     
