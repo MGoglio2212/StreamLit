@@ -31,7 +31,7 @@ def Scadenza(Doc):
     r3 = 'ADESION.{,10}FINO'
     r4 = 'VALID.{,25}FINO'
     r5 = 'SOTTOSCRIVIBIL.{,30}'
-    r6 = 'VALID.{,5}DA.{,15}A\s'
+    r6 = 'VALID.{,30}DA.{,15}A'
     r7 = 'ENTRO IL'
     #r8 = 'DAL\s.{,15}AL\s'
     r8 = 'SCADENZA'
