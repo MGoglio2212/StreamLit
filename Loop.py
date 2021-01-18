@@ -20,6 +20,7 @@ from ProveQuoteFissaAnno import PrezzoComponenteDispacciamento , PrezzoComponent
 from ProveScadenza import Scadenza 
 from Detect_PrezzoMonorario import PrezzoComponenteEnergia, TipoPrezzo  
 from Detect_PrezzoMonorario_GAS import PrezzoComponenteGAS, TipoPrezzo_GAS
+from ProveIdentificazionePromozioni import Promozioni 
 
 from ProvePerNomeOfferta import Name
 from SplitPDF_EnergiaGas import SplitPDF
@@ -430,7 +431,14 @@ def ElabFile(directory, filename, NPICKLE):
             except:
                 pass
             
-          
+            try:
+               
+                Promo = Promozioni(Doc)
+                Promo = " ".join(Promo)
+                Res['CaratteristicheAggiuntive'] = Promo
+            except: 
+                pass
+                      
             
             
             #####################################
@@ -467,7 +475,7 @@ def Cicla(directory):
     
     import os
     
-    Tab = pd.DataFrame(columns = ['File', 'Commodity', 'Name', 'CodiceOfferta', 'StimaSpesaAnnua','Price', 'Dir', 'TipoPrezzo','F1', 'F2', 'F3', 'PrezzoCV', 'PrezzoDISP', 'FlagVerde', 'PrezzoVerde', 'Scadenza', 'Durata'])
+    Tab = pd.DataFrame(columns = ['File', 'Commodity', 'Name', 'CodiceOfferta', 'StimaSpesaAnnua','Price', 'Dir', 'TipoPrezzo','F1', 'F2', 'F3', 'PrezzoCV', 'PrezzoDISP', 'FlagVerde', 'PrezzoVerde', 'Scadenza', 'Durata','CaratteristicheAggiuntive'])
 
     for filename in os.listdir(directory):
         if filename.endswith(".pdf"): 
