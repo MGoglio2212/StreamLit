@@ -47,7 +47,10 @@ def energiaVerde(Doc, PE):
     r12 = r'ESCLUSIVAMENTE.{0,10}FONTI.{0,10}RINNOVABILI'
     r13 = r'SOLO.{0,10}FONTI.{0,10}RINNOVABILI'
     r14 = r'CORRISPETTIVO.{0,5}ENERGIA.{0,10}VERDE'
-    regex = [r1, r2 , r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14]
+    r15 = r'INTERAMENTE.{0,50}FONT.{0,10}RINNOVABI'
+    r16 = r'ESCLUSIVA.{0,50}FONT.{0,10}RINNOVABI'
+    
+    regex = [r1, r2 , r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16]
     
     regex = re.compile('|'.join(regex))
     
