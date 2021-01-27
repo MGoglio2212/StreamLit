@@ -61,7 +61,7 @@ def energiaVerde(Doc, PE):
     #regexNum2 = r'-?\d*\..?\d+'
     
     regexNum1 = r'-?\s?\d+\,?\d+'
-    regexNum2 = r'-?\s?d+\.?\d+'
+    regexNum2 = r'-?\s?\d+\.?\d+'
     
     
     regexNum = [regexNum1, regexNum2]
