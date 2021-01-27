@@ -36,7 +36,7 @@ def energiaVerde(Doc, PE):
     r1 = r'GREEN(?!\s+NETWORK)'
     r2 = r'(?<!NUMERO.{0,20}|N°.{0,20}|N.{0,20})VERDE'
     r3 = r'100%.{0,10}FONTI.{0,20}RINNOVABILI'
-    r4 = r'SOLO.{0,10}FONTI.{0,20}RINNOVABILI'
+    r4 = r'SOLO.{0,20}FONT.{0,20}RINNOVABIL'
     r5 = r'OPZIONE.{0,30}RINNOVABI'
     r6 = r'SOLTANTO.{0,10}ENERGIA.{0,25}RINNOVABILI'
     r7 = r'APPROVVIGION.{0,10}IMPIANTI.{0,25}RINNOVABIL'
@@ -55,15 +55,11 @@ def energiaVerde(Doc, PE):
     Base = [m.start() for m in regex.finditer(Doc)]
     Base = pd.DataFrame(Base, columns = ['PositionBase'])
       
-    
-    
-    #regexNum1 = r'-?\d*\,.?\d+'
-    #regexNum2 = r'-?\d*\..?\d+'
-    
+ 
     regexNum1 = r'-?\s?\d+\,?\d+'
     regexNum2 = r'-?\s?\d+\.?\d+'
     
-    
+        
     regexNum = [regexNum1, regexNum2]
     
     regexNum = re.compile('|'.join(regexNum))
@@ -108,8 +104,7 @@ def energiaVerde(Doc, PE):
     #elimino eventuali stringe vuote
     PossiblePrice = PossiblePrice[PossiblePrice['Price'].apply(lambda row: len(row)) > 0]
     '''
-    
-    
+    Doc[3000:3400]
     
     Base['key'] = 0
     PossiblePrice['key'] = 0
