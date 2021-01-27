@@ -89,7 +89,7 @@ add_selectbox = st.sidebar.selectbox('',
 
 st.sidebar.subheader("Carica un file")
 uploaded_file = st.sidebar.file_uploader("", type = "pdf")
-st.sidebar.markdown("<h4 style='text-align: center; color: black;'>si consiglia refresh del browser ad ogni nuovo file testato (pulizia cache)</h4>", unsafe_allow_html=True)
+st.sidebar.markdown("<h5 style='text-align: center; color: black;'>si consiglia refresh del browser ad ogni nuovo file testato (pulizia cache)</h4>", unsafe_allow_html=True)
 
 
 st.markdown("<h1 style='text-align: center; color: black;'>Estrattore Informazioni file CTE - SC</h1>", unsafe_allow_html=True)
@@ -293,19 +293,19 @@ if uploaded_file is not None:
         
         if Price != "":
             st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario materia prima:</h1>", unsafe_allow_html=True)
-            st.write(Price.upper()) 
+            st.write(Price) 
                 
     
         if Commodity == 'Energia':            
             if F1 != "":
                 st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F1:</h1>", unsafe_allow_html=True)
-                st.write(F1.upper()) 
+                st.write(F1) 
             if F2 != "":
                 st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F2:</h1>", unsafe_allow_html=True)
-                st.write(F2.upper()) 
+                st.write(F2) 
             if F3 != "":
                 st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F3:</h1>", unsafe_allow_html=True)
-                st.write(F3.upper()) 
+                st.write(F3) 
         
         
         if TipoPrezzo != "":
