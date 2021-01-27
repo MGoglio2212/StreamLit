@@ -89,6 +89,8 @@ add_selectbox = st.sidebar.selectbox('',
 
 st.sidebar.subheader("Carica un file")
 uploaded_file = st.sidebar.file_uploader("", type = "pdf")
+st.sidebar.markdown("<h4 style='text-align: center; color: black;'>si consiglia refresh del browser ad ogni nuovo file testato (pulizia cache)</h4>", unsafe_allow_html=True)
+
 
 st.markdown("<h1 style='text-align: center; color: black;'>Estrattore Informazioni file CTE - SC</h1>", unsafe_allow_html=True)
 st.markdown("<h2 style='text-align: center; color: black;'>Energia Gas</h2>", unsafe_allow_html=True)
@@ -236,6 +238,20 @@ if uploaded_file is not None:
         Commodity = str(Result['Commodity'].iloc[0])
         CaratteristicheAggiuntive = str(Result['CaratteristicheAggiuntive'].iloc[0])
         
+        if StimaSpesaAnnua!= "":
+            StimaSpesaAnnua = StimaSpesaAnnua + " €"
+        if Price != "":
+            if Commodity == "Energia":
+                Price = Price + " €/kwh"
+            if Commodity == "Gas":
+                Price = Price + " € smc"
+        if F1 != "":
+            F1 = F1 + " €/kwh"
+        if F2 != "":
+            F2 = F2 + " €/kwh"
+        if F3 != "":
+            F3 = F3 + " €/kwh"
+        
         if filename == "SCHEDA_CONFR_LUCE_BASE_LSIC.pdf":
             Price = ""
             F1 = ""
@@ -270,29 +286,26 @@ if uploaded_file is not None:
         if StimaSpesaAnnua != "":
             if Commodity == "Energia":
                 st.markdown("<h3 style='text-align: left; color: black;'>Stima spesa annua (2.700 kwh):</h1>", unsafe_allow_html=True)
-                st.write(StimaSpesaAnnua.upper()) + ' €'
+                st.write(StimaSpesaAnnua.upper()) 
             if Commodity == "Gas":
                 st.markdown("<h3 style='text-align: left; color: black;'>Stima spesa annua (1.400 Smc NordOvest):</h1>", unsafe_allow_html=True)
-                st.write(StimaSpesaAnnua.upper()) + ' €'
+                st.write(StimaSpesaAnnua.upper()) 
         
         if Price != "":
             st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario materia prima:</h1>", unsafe_allow_html=True)
-            if Commodity == "Energia":
-                st.write(Price.upper()) + " €/kwh"
-            if Commodity == "Gas":
-                st.write(Price.upper()) + " €/smc"
+            st.write(Price.upper()) 
                 
     
         if Commodity == 'Energia':            
             if F1 != "":
                 st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F1:</h1>", unsafe_allow_html=True)
-                st.write(F1.upper()) + " €/kwh"
+                st.write(F1.upper()) 
             if F2 != "":
                 st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F2:</h1>", unsafe_allow_html=True)
-                st.write(F2.upper()) + " €/kwh"
+                st.write(F2.upper()) 
             if F3 != "":
                 st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F3:</h1>", unsafe_allow_html=True)
-                st.write(F3.upper()) + " €/kwh"
+                st.write(F3.upper()) 
         
         
         if TipoPrezzo != "":
