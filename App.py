@@ -268,23 +268,31 @@ if uploaded_file is not None:
         
         #if os.path.isfile('Cred.json'):        
         if StimaSpesaAnnua != "":
-            st.markdown("<h3 style='text-align: left; color: black;'>Stima spesa annua:</h1>", unsafe_allow_html=True)
-            st.write(StimaSpesaAnnua.upper())
+            if Commodity == "Energia":
+                st.markdown("<h3 style='text-align: left; color: black;'>Stima spesa annua (2.700 kwh):</h1>", unsafe_allow_html=True)
+                st.write(StimaSpesaAnnua.upper()) + ' €'
+            if Commodity == "Gas":
+                st.markdown("<h3 style='text-align: left; color: black;'>Stima spesa annua (1.400 Smc NordOvest):</h1>", unsafe_allow_html=True)
+                st.write(StimaSpesaAnnua.upper()) + ' €'
         
         if Price != "":
             st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario materia prima:</h1>", unsafe_allow_html=True)
-            st.write(Price.upper())
+            if Commodity == "Energia":
+                st.write(Price.upper()) + " €/kwh"
+            if Commodity == "Gas":
+                st.write(Price.upper()) + " €/smc"
+                
     
         if Commodity == 'Energia':            
             if F1 != "":
                 st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F1:</h1>", unsafe_allow_html=True)
-                st.write(F1.upper())
+                st.write(F1.upper()) + " €/kwh"
             if F2 != "":
                 st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F2:</h1>", unsafe_allow_html=True)
-                st.write(F2.upper())
+                st.write(F2.upper()) + " €/kwh"
             if F3 != "":
                 st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F3:</h1>", unsafe_allow_html=True)
-                st.write(F3.upper())
+                st.write(F3.upper()) + " €/kwh"
         
         
         if TipoPrezzo != "":
@@ -293,7 +301,7 @@ if uploaded_file is not None:
         
         if PrezzoCV != "":
             st.markdown("<h3 style='text-align: left; color: black;'>Quota Commercializzazione Vendita:</h1>", unsafe_allow_html=True)
-            st.write(PrezzoCV.upper())
+            st.write(PrezzoCV.upper()) 
     
         if Scadenza != "":
             st.markdown("<h3 style='text-align: left; color: black;'>Scadenza Condizioni:</h1>", unsafe_allow_html=True)
