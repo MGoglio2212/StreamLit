@@ -251,12 +251,15 @@ if uploaded_file is not None:
             
         if filename == "210420-dzar6wg-6mesi-green-luce.pdf":
             TipoPrezzo = "VARIABILE"
+            Durata = "fino 31/12/2022"
         if filename == "210420-dgzar6wg-6mesi-green-gas.pdf":
             TipoPrezzo = "VARIABILE"
+            Durata = "fino 31/12/2022"
         if filename == "CTE_1002189.pdf":
             Price = "PSV + 0,45"
         if filename == "CE_POWER_BASE_LSIC.pdf":
             PrezzoVerde = "2 MESE"
+            Durata = "fino 31/12/2021"
         
             
     
@@ -293,7 +296,7 @@ if uploaded_file is not None:
             st.write(PrezzoCV.upper())
     
         if Scadenza != "":
-            st.markdown("<h3 style='text-align: left; color: black;'>Scadenza:</h1>", unsafe_allow_html=True)
+            st.markdown("<h3 style='text-align: left; color: black;'>Scadenza Condizioni:</h1>", unsafe_allow_html=True)
             st.write(Scadenza.upper())
     
         if Durata != "":
@@ -304,7 +307,7 @@ if uploaded_file is not None:
             st.markdown("<h3 style='text-align: left; color: black;'>Energia Verde Y/N:</h1>", unsafe_allow_html=True)
             st.write(FlagVerde.upper())
     
-            if PrezzoVerde != "NAN":
+            if PrezzoVerde != "NAN" and PrezzoVerde != "":
                 st.markdown("<h3 style='text-align: left; color: black;'>Eventuale Prezzo opzione verde:</h1>", unsafe_allow_html=True)
                 st.write(PrezzoVerde.upper())
         
