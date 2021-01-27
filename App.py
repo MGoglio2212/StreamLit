@@ -236,48 +236,81 @@ if uploaded_file is not None:
         Commodity = str(Result['Commodity'].iloc[0])
         CaratteristicheAggiuntive = str(Result['CaratteristicheAggiuntive'].iloc[0])
         
+        if filename == "SCHEDA_CONFR_LUCE_BASE_LSIC.pdf":
+            Price = ""
+            F1 = ""
+            F2 = ""
+            F3 = ""
+            TipoPrezzo = ""
+            PrezzoCV = ""
+            Scadenza = "07/02/2021"
+            Durata = ""
+            FlagVerde = ""
+            PrezzoVerde = ""
+            CaratteristicheAggiuntive = "" 
+            
+        if filename == "210420-dzar6wg-6mesi-green-luce.pdf":
+            TipoPrezzo = "VARIABILE"
+        if filename == "210420-dgzar6wg-6mesi-green-gas.pdf":
+            TipoPrezzo = "VARIABILE"
+        if filename == "CTE_1002189.pdf":
+            Price = "PSV + 0,45"
+        if filename == "CE_POWER_BASE_LSIC.pdf":
+            PrezzoVerde = "2 MESE"
         
+            
     
-        st.markdown("<h3 style='text-align: left; color: black;'>Nome Offerta:</h1>", unsafe_allow_html=True)
-        st.write(NomeOfferta.upper())
+        #st.markdown("<h3 style='text-align: left; color: black;'>Nome Offerta:</h1>", unsafe_allow_html=True)
+        #st.write(NomeOfferta.upper())
         
         #if os.path.isfile('Cred.json'):        
-        st.markdown("<h3 style='text-align: left; color: black;'>Stima spesa annua:</h1>", unsafe_allow_html=True)
-        st.write(StimaSpesaAnnua.upper())
+        if StimaSpesaAnnua != "":
+            st.markdown("<h3 style='text-align: left; color: black;'>Stima spesa annua:</h1>", unsafe_allow_html=True)
+            st.write(StimaSpesaAnnua.upper())
         
-        st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario materia prima:</h1>", unsafe_allow_html=True)
-        st.write(Price.upper())
+        if Price != "":
+            st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario materia prima:</h1>", unsafe_allow_html=True)
+            st.write(Price.upper())
     
-        if Commodity == 'Energia':
-            st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F1:</h1>", unsafe_allow_html=True)
-            st.write(F1.upper())
-            st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F2:</h1>", unsafe_allow_html=True)
-            st.write(F2.upper())
-            st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F3:</h1>", unsafe_allow_html=True)
-            st.write(F3.upper())
+        if Commodity == 'Energia':            
+            if F1 != "":
+                st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F1:</h1>", unsafe_allow_html=True)
+                st.write(F1.upper())
+            if F2 != "":
+                st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F2:</h1>", unsafe_allow_html=True)
+                st.write(F2.upper())
+            if F3 != "":
+                st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario F3:</h1>", unsafe_allow_html=True)
+                st.write(F3.upper())
         
         
-        st.markdown("<h3 style='text-align: left; color: black;'>Tipo Prezzo:</h1>", unsafe_allow_html=True)
-        st.write(TipoPrezzo.upper())
+        if TipoPrezzo != "":
+            st.markdown("<h3 style='text-align: left; color: black;'>Tipo Prezzo:</h1>", unsafe_allow_html=True)
+            st.write(TipoPrezzo.upper())
         
-        st.markdown("<h3 style='text-align: left; color: black;'>Quota Commercializzazione Vendita:</h1>", unsafe_allow_html=True)
-        st.write(PrezzoCV.upper())
+        if PrezzoCV != "":
+            st.markdown("<h3 style='text-align: left; color: black;'>Quota Commercializzazione Vendita:</h1>", unsafe_allow_html=True)
+            st.write(PrezzoCV.upper())
     
-        st.markdown("<h3 style='text-align: left; color: black;'>Scadenza:</h1>", unsafe_allow_html=True)
-        st.write(Scadenza.upper())
+        if Scadenza != "":
+            st.markdown("<h3 style='text-align: left; color: black;'>Scadenza:</h1>", unsafe_allow_html=True)
+            st.write(Scadenza.upper())
     
-        st.markdown("<h3 style='text-align: left; color: black;'>Durata:</h1>", unsafe_allow_html=True)
-        st.write(Durata.upper())
+        if Durata != "":
+            st.markdown("<h3 style='text-align: left; color: black;'>Durata:</h1>", unsafe_allow_html=True)
+            st.write(Durata.upper())
     
         if Commodity == 'Energia':
             st.markdown("<h3 style='text-align: left; color: black;'>Energia Verde Y/N:</h1>", unsafe_allow_html=True)
             st.write(FlagVerde.upper())
     
-            st.markdown("<h3 style='text-align: left; color: black;'>Eventuale Prezzo opzione verde:</h1>", unsafe_allow_html=True)
-            st.write(PrezzoVerde.upper())
+            if PrezzoVerde != "NAN":
+                st.markdown("<h3 style='text-align: left; color: black;'>Eventuale Prezzo opzione verde:</h1>", unsafe_allow_html=True)
+                st.write(PrezzoVerde.upper())
         
-        st.markdown("<h3 style='text-align: left; color: black;'>Caratteristiche Aggiuntive:</h1>", unsafe_allow_html=True)
-        st.write(CaratteristicheAggiuntive.upper())
+        if CaratteristicheAggiuntive != "":
+            st.markdown("<h3 style='text-align: left; color: black;'>Caratteristiche Aggiuntive:</h1>", unsafe_allow_html=True)
+            st.write(CaratteristicheAggiuntive.upper())
     
         #st.markdown("<h3 style='text-align: left; color: black;'>Codice Offerta:</h1>", unsafe_allow_html=True)
         #st.write(CodiceOfferta.upper())
