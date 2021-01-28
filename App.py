@@ -294,7 +294,7 @@ if uploaded_file is not None:
         
         if Price != "":
             st.markdown("<h3 style='text-align: left; color: black;'>Prezzo unitario materia prima:</h1>", unsafe_allow_html=True)
-            st.markdown("<h2 style='text-align: left; color: black;'>(non scontato - se variabile prezzo riferimento riportato)</h1>", unsafe_allow_html=True)
+            st.markdown("<h5 style='text-align: left; color: black;'>(non scontato - se variabile prezzo riferimento riportato)</h1>", unsafe_allow_html=True)
             st.write(Price) 
                 
     
