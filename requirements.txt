@@ -9,4 +9,3 @@ PyPDF2==1.26.0
 PyMuPDF==1.16.14
 google-cloud-storage
 google-cloud-documentai
-streamlit==0.77.0
